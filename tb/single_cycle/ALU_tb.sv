@@ -41,6 +41,36 @@ module ALU_tb();
 
         // XOR
         check(32'hFFFF_FFFF,  32'd0, 4'b0011, 32'hFFFF_FFFF, 1'd0);
+
+        // AND
+        check(32'hFFFF_0000, 32'h0F0F_F0F0, 4'b0000, 32'h0F0F_0000, 1'd0);
+        check(32'hFFFF_FFFF, 32'h0000_0000, 4'b0000, 32'h0000_0000, 1'd1);
+
+        // OR
+        check(32'hFFFF_0000, 32'h0F0F_F0F0, 4'b0001, 32'hFFFF_F0F0, 1'd0);
+        check(32'hFFFF_FFFF, 32'h0000_0000, 4'b0001, 32'hFFFF_FFFF, 1'd0);
+
+        // SLL
+        check(32'hFFFF_0000, 32'd4, 4'b0100, 32'hFFF0_0000, 1'd0);
+
+        // SRL
+        check(32'hFFFF_0000, 32'd4, 4'b0101, 32'h0FFF_F000, 1'd0);
+
+        // SLT
+        check(32'hFFFF_0000, 32'd0, 4'b0111, 32'd1, 1'd0);
+        check(32'h0FFF_0000, 32'd0, 4'b0111, 32'd0, 1'd1);
+
+        // SLTU
+        check(32'hFFFF_0000, 32'd0, 4'b1000, 32'd0, 1'd1);
+        check(32'hFFFF_0000, 32'hFFFF_0001, 4'b1000, 32'd1, 1'd0);
+
+        // SRA
+        check(32'h0FFF_F000, 32'd4, 4'b1001, 32'h00FF_FF00, 1'd0); // interprets as unsigned
+        check(32'hFFFF_0000, 32'd4, 4'b1001, 32'hFFFF_F000, 1'd0); // should sign extend
+
+        // LUI
+        check(32'd0, 32'hFFFF_FFFF, 4'b1010, 32'hFFFF_F000, 1'd0);
+
         $finish;
     end
 endmodule
