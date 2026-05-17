@@ -22,8 +22,7 @@ module ALU(input [31:0]      a,
           7  : result = ($signed(a) < $signed(b)) ? 1 : 0;
           8  : result = (a < b) ? 1 : 0;
           9  : result = $signed(a) >>> b;
-          10 : result = b << 12; //LUI -- 20 bits passed in b become upper 20 of result
-          //note that b is the port used for LUI
+          10 : result = b; //LUI -- simply passes b through to the output
         endcase
     end
 endmodule

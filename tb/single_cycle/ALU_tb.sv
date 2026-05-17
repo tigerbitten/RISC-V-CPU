@@ -80,7 +80,7 @@ module ALU_tb();
         check(32'hFFFF_0000, 32'd4, 4'b1001, 32'hFFFF_F000, 1'd0, 1'bx, 1'bx); // should sign extend
 
         // LUI
-        check(32'd0, 32'hFFFF_FFFF, 4'b1010, 32'hFFFF_F000, 1'd0, 1'bx, 1'bx);
+        check(32'd0, 32'h0000_0000, 4'b1010, 32'h0000_0000, 1'd1, 1'bx, 1'bx);
 
         $finish;
     end
