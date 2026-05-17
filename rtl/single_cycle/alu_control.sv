@@ -5,8 +5,8 @@ module alu_control(input [1:0]      alu_op,
     
     always_comb begin
         case (alu_op)
-          2'b00 : alu_control = 4'b0010;
-          2'b01 : alu_control = 4'b0110;
+          2'b00 : alu_control = 4'b0010; //wire to add for stores, loads, jal(r), auipc 
+          2'b01 : alu_control = 4'b0110; //wire to subtract
           2'b10 : case ({funct3, funct7_30})
                     4'b0000 : alu_control = 4'b0010; //ADD
                     4'b0001 : alu_control = 4'b0110; //SUB
