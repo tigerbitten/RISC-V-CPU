@@ -36,7 +36,7 @@ module alu_control_tb;
         //ALUop = 01 means sub regardless of funct fields
         check_alu_control(2'b01, 3'bxxx, 1'bx, 4'b0110);
         
-// R-Type -------------------------------
+// R-Type/I-Type -------------------------------
         check_alu_control(2'b10, 3'b000, 1'b0, 4'b0010); //Add
         check_alu_control(2'b10, 3'b000, 1'b1, 4'b0110); //Sub
         check_alu_control(2'b10, 3'b111, 1'b0, 4'b0000); //And
