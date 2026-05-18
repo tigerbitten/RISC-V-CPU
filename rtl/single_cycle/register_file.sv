@@ -10,17 +10,16 @@ module register_file(input         clk,
     
     reg [31:0] registers [31:0];
     
-    assign registers[0] = 0;
     assign rs1_data = registers[rs1_addr];
     assign rs2_data = registers[rs2_addr];
     
     always_ff @(posedge clk) begin
         if (reset) begin
-            for (int i = 1; i < 32; i++) begin
+            for (int i = 0; i < 32; i++) begin
                 registers[i] <= 32'b0;
             end
         end else begin
-            if (reg_write) begin
+            if (reg_write && rd_addr != 0) begin
                 registers[rd_addr] <= rd_data;
             end
         end
