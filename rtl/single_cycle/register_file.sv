@@ -8,7 +8,7 @@ module register_file(input         clk,
                      output [31:0] rs1_data,
                      output [31:0] rs2_data);
     
-    reg [31:0] registers [31:0];
+    reg [31:0] registers [0:31];
     
     assign rs1_data = registers[rs1_addr];
     assign rs2_data = registers[rs2_addr];
