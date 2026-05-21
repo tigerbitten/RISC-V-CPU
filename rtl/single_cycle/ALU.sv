@@ -4,11 +4,16 @@ module ALU(input [31:0]      a,
            output reg [31:0] result,
            output            zero,
            output            negative,
-           output reg        overflow);
+           output reg        overflow,
+           output            carry);
 
+    wire [32:0] sub_ext; //33 bit temp subtraction for carry flag
+    
     assign zero     = (result == 0);
     assign negative = result[31];
     assign overflow = (alu_control == 4'b0110) ? ((a[31] != b[31]) && (a[31] != result[31])) : (a[31] == b[31]) && (a[31] != result[31]); //compute overflow based off subtraction or addition operation
+    assign sub_ext  = {1'b0, a} - {1'b0, b};
+    assign carry    = sub_ext[32];
 
     always_comb begin
         case (alu_control)
