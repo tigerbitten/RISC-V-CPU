@@ -1,13 +1,13 @@
-module control_unit(input [6:0]  opcode,
-                    output [1:0] alu_op,
-                    output       alu_src_b,
-                    output       alu_src_a,
-                    output       branch_ctrl,
-                    output       jump,
-                    output       mem_read,
-                    output       mem_write,
-                    output [1:0] mem_to_reg,
-                    output       reg_write);
+module control_unit(input [6:0]      opcode,
+                    output reg [1:0] alu_op,
+                    output reg       alu_src_b, //on when second input comes from imm_gen
+                    output reg       alu_src_a, //on when first input is PC
+                    output reg       branch_ctrl,
+                    output reg       jump,
+                    output reg       mem_read,
+                    output reg       mem_write,
+                    output reg [1:0] mem_to_reg, //00-> write from ALU,01->  from mem, 10-> pc+4
+                    output reg       reg_write);
 
     always_comb begin
         case (opcode)
@@ -77,9 +77,9 @@ module control_unit(input [6:0]  opcode,
               mem_to_reg  = 2'b00;
               reg_write   = 1'b0;
           end
-          7'b1101111 : begin //J-Type instructions (JAL only for now)
+          7'b1101111 : begin //J-Type instructions (JAL)
               alu_op      = 2'b00;
-              alu_src_b   = 1'b0;
+              alu_src_b   = 1'b1;
               alu_src_a   = 1'b1;
               branch_ctrl = 1'b0;
               jump        = 1'b1;
@@ -88,7 +88,28 @@ module control_unit(input [6:0]  opcode,
               mem_to_reg  = 2'b10;
               reg_write   = 1'b1;
           end
+          7'b0110111 : begin //U-Type LUI
+              alu_op      = 2'b11;
+              alu_src_b   = 1'b1;
+              alu_src_a   = 1'b0;
+              branch_ctrl = 1'b0;
+              jump        = 1'b0;
+              mem_read    = 1'b0;
+              mem_write   = 1'b0;
+              mem_to_reg  = 2'b00;
+              reg_write   = 1'b1;
+          end
+          7'b0010111 : begin //U-Type AUIPC
+              alu_op      = 2'b00;
+              alu_src_b   = 1'b1;
+              alu_src_a   = 1'b1;
+              branch_ctrl = 1'b0;
+              jump        = 1'b0;
+              mem_read    = 1'b0;
+              mem_write   = 1'b0;
+              mem_to_reg  = 2'b00;
+              reg_write   = 1'b1;
+          end
         endcase
     end
 endmodule
-                    
