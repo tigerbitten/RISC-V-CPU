@@ -1,6 +1,7 @@
 module control_unit(input [6:0]  opcode,
                     output [1:0] alu_op,
-                    output       alu_src,
+                    output       alu_src_b,
+                    output       alu_src_a,
                     output       branch_ctrl,
                     output       jump,
                     output       mem_read,
@@ -12,7 +13,8 @@ module control_unit(input [6:0]  opcode,
         case (opcode)
           7'b1100011 : begin //B-Type
               alu_op      = 2'b01;
-              alu_src     = 1'b0;
+              alu_src_b   = 1'b0;
+              alu_src_a   = 1'b0;
               branch_ctrl = 1'b1;
               jump        = 1'b0;
               mem_read    = 1'b0;
@@ -22,7 +24,8 @@ module control_unit(input [6:0]  opcode,
           end
           7'b0110011 : begin //R-Type
               alu_op      = 2'b10;
-              alu_src     = 1'b0;
+              alu_src_b   = 1'b0;
+              alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
               jump        = 1'b0;
               mem_read    = 1'b0;
@@ -32,7 +35,8 @@ module control_unit(input [6:0]  opcode,
           end
           7'b0010011 : begin //I-Type ALU immediate instructions
               alu_op      = 2'b10;
-              alu_src     = 1'b1;
+              alu_src_b   = 1'b1;
+              alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
               jump        = 1'b0;
               mem_read    = 1'b0;
@@ -42,7 +46,8 @@ module control_unit(input [6:0]  opcode,
           end
           7'b0000011 : begin //I-Type load instructions
               alu_op      = 2'b00;
-              alu_src     = 1'b1;
+              alu_src_b   = 1'b1;
+              alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
               jump        = 1'b0;
               mem_read    = 1'b1;
@@ -52,7 +57,8 @@ module control_unit(input [6:0]  opcode,
           end
           7'b1100111 : begin //I-Type JALR instruction
               alu_op      = 2'b00;
-              alu_src     = 1'b1;
+              alu_src_b   = 1'b1;
+              alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
               jump        = 1'b1;
               mem_read    = 1'b0;
@@ -62,7 +68,8 @@ module control_unit(input [6:0]  opcode,
           end
           7'b0100011 : begin //S-Type instructions
               alu_op      = 2'b00;
-              alu_src     = 1'b1;
+              alu_src_b   = 1'b1;
+              alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
               jump        = 1'b0;
               mem_read    = 1'b0;
@@ -72,7 +79,8 @@ module control_unit(input [6:0]  opcode,
           end
           7'b1101111 : begin //J-Type instructions (JAL only for now)
               alu_op      = 2'b00;
-              alu_src     = 1'b0;
+              alu_src_b   = 1'b0;
+              alu_src_a   = 1'b1;
               branch_ctrl = 1'b0;
               jump        = 1'b1;
               mem_read    = 1'b0;

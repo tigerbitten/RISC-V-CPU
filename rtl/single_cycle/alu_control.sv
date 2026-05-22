@@ -19,6 +19,7 @@ module alu_control(input [1:0]      alu_op,
                     4'b1010 : alu_control = 4'b0101; //SRL
                     4'b1011 : alu_control = 4'b1001; //SRA
                   endcase
+          2'b11 : alu_control = 4'b1010; //LUI passthrough
         endcase
     end
 endmodule
