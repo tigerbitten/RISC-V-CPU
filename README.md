@@ -10,6 +10,9 @@ Core datapath components implemented and verified:
 - ALU Controller
 - Register File
 - Immediate Generator
+- Instruction Memory
+- Data Memory
+- Control Unit
   
 Each module has a corresponding testbench for simulation-based verification.
  
