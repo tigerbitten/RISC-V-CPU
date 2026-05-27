@@ -20,7 +20,7 @@ package riscv_pkg;
                             ALUOP_RTYPE = 2'b10,
                             ALUOP_LUI   = 2'b11
                             } alu_op_t;
-
+    
     typedef enum reg [6:0] {
                             OP_RTYPE    = 7'b0110011,
                             OP_ALU_IMM  = 7'b0010011, // (I-Type according to RISC-V)
@@ -32,4 +32,22 @@ package riscv_pkg;
                             OP_LUI      = 7'b0110111,
                             OP_AUIPC    = 7'b0010111
                             } opcode_t;
+
+    typedef enum reg [2:0] {
+                            FUNCT3_BYTE       = 3'b000,
+                            FUNCT3_HALFWORD   = 3'b001,
+                            FUNCT3_WORD       = 3'b010,
+                            FUNCT3_BYTE_U     = 3'b100,
+                            FUNCT3_HALFWORD_U = 3'b101
+                            } mem_funct3_t;
+
+    typedef enum reg [2:0] {
+                            FUNCT3_BEQ  = 3'b000,
+                            FUNCT3_BNE  = 3'b001,
+                            FUNCT3_BLT  = 3'b100,
+                            FUNCT3_BGE  = 3'b101,
+                            FUNCT3_BLTU = 3'b110,
+                            FUNCT3_BGEU = 3'b111
+                            } branch_funct3_t;
+    
 endpackage

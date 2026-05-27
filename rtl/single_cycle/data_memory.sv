@@ -1,3 +1,5 @@
+import riscv_pkg::*;
+
 module data_memory(input             clk,
                    input             mem_read,
                    input             mem_write,
@@ -11,17 +13,17 @@ module data_memory(input             clk,
     always_ff @(posedge clk) begin
         if (mem_write) begin
             case (funct3)
-              3'b010 : begin //SW
+              FUNCT3_WORD : begin //SW
                   memory[address]   <= write_data[7:0];
                   memory[address+1] <= write_data[15:8];
                   memory[address+2] <= write_data[23:16];
                   memory[address+3] <= write_data[31:24];
               end
-              3'b001 : begin //SH
+              FUNCT3_HALFWORD : begin //SH
                   memory[address]   <= write_data[7:0];
                   memory[address+1] <= write_data[15:8];
               end
-              3'b000 : begin //SB
+              FUNCT3_BYTE : begin //SB
                   memory[address]   <= write_data[7:0];
               end
             endcase
@@ -31,11 +33,11 @@ module data_memory(input             clk,
     always_comb begin
         if (mem_read) begin
             case (funct3)
-              3'b010 : read_data = {memory[address+3], memory[address+2], memory[address+1], memory[address]};
-              3'b001 : read_data = {{16{memory[address+1][7]}}, memory[address+1], memory[address]};
-              3'b101 : read_data = {{16{1'b0}}, memory[address+1], memory[address]};
-              3'b000 : read_data = {{24{memory[address][7]}}, memory[address]};
-              3'b100 : read_data = {{24{1'b0}}, memory[address]};
+              FUNCT3_WORD       : read_data = {memory[address+3], memory[address+2], memory[address+1], memory[address]};
+              FUNCT3_HALFWORD   : read_data = {{16{memory[address+1][7]}}, memory[address+1], memory[address]};
+              FUNCT3_HALFWORD_U : read_data = {{16{1'b0}}, memory[address+1], memory[address]};
+              FUNCT3_BYTE       : read_data = {{24{memory[address][7]}}, memory[address]};
+              FUNCT3_BYTE_U     : read_data = {{24{1'b0}}, memory[address]};
             endcase
         end else begin
             read_data = 0;
