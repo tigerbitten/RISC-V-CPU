@@ -48,6 +48,7 @@ module alu_control_tb;
         check_alu_control(2'b10, 3'b101, 1'b0, 4'b0101); //SRL
         check_alu_control(2'b10, 3'b101, 1'b1, 4'b1001); //SRA
 
+        // ALUop = 11;
         check_alu_control(2'b11, 3'bxxx, 1'bx, 4'b1010); //LUI
         $finish;
     end
