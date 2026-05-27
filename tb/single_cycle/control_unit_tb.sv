@@ -1,7 +1,7 @@
 module control_unit_tb;
 
     opcode_t opcode;
-    reg [1:0] mem_to_reg;
+    mem_to_reg_t mem_to_reg;
     alu_op_t alu_op;
     reg       branch_ctrl, mem_read, mem_write, alu_src_b, alu_src_a, reg_write, jump;
     integer   failed;
@@ -17,16 +17,16 @@ module control_unit_tb;
                       .reg_write   (reg_write),
                       .jump        (jump));
 
-    task check (input       opcode_t test_opcode,
-                input       expect_branch,
-                input       expect_mem_read,
-                input       expect_mem_write,
-                input [1:0] expect_mem_to_reg,
-                input       alu_op_t expect_alu_op,
-                input       expect_alu_src_b,
-                input       expect_alu_src_a,
-                input       expect_reg_write,
-                input       expect_jump);
+    task check (input opcode_t test_opcode,
+                input expect_branch,
+                input expect_mem_read,
+                input expect_mem_write,
+                input mem_to_reg_t expect_mem_to_reg,
+                input alu_op_t expect_alu_op,
+                input expect_alu_src_b,
+                input expect_alu_src_a,
+                input expect_reg_write,
+                input expect_jump);
         begin
             opcode = test_opcode;
             failed = 0;
@@ -46,7 +46,7 @@ module control_unit_tb;
             end
             
             if (expect_mem_to_reg !== mem_to_reg) begin
-                $display("FAIL: mem_to_reg error -- mem_to_reg=%b expected=%b", mem_to_reg, expect_mem_to_reg);
+                $display("FAIL: mem_to_reg error -- mem_to_reg=%s expected=%s", mem_to_reg.name(), expect_mem_to_reg.name());
                 failed = 1;
             end
             
@@ -76,7 +76,7 @@ module control_unit_tb;
               .expect_alu_src_b  (1'b0),
               .expect_alu_src_a  (1'b0),
               .expect_alu_op     (ALUOP_SUB),
-              .expect_mem_to_reg (2'b00),
+              .expect_mem_to_reg (MEM_TO_REG_ALU),
               .expect_reg_write  (1'b0),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b0),
@@ -87,7 +87,7 @@ module control_unit_tb;
               .expect_alu_src_b  (1'b0),
               .expect_alu_src_a  (1'b0),
               .expect_alu_op     (ALUOP_RTYPE),
-              .expect_mem_to_reg (2'b00),
+              .expect_mem_to_reg (MEM_TO_REG_ALU),
               .expect_reg_write  (1'b1),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b0),
@@ -98,7 +98,7 @@ module control_unit_tb;
               .expect_alu_src_b  (1'b1),
               .expect_alu_src_a  (1'b0),
               .expect_alu_op     (ALUOP_RTYPE),
-              .expect_mem_to_reg (2'b00),
+              .expect_mem_to_reg (MEM_TO_REG_ALU),
               .expect_reg_write  (1'b1),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b0),
@@ -109,7 +109,7 @@ module control_unit_tb;
               .expect_alu_src_b  (1'b1),
               .expect_alu_src_a  (1'b0),
               .expect_alu_op     (ALUOP_ADD),
-              .expect_mem_to_reg (2'b01),
+              .expect_mem_to_reg (MEM_TO_REG_MEM),
               .expect_reg_write  (1'b1),
               .expect_mem_read   (1'b1),
               .expect_mem_write  (1'b0),
@@ -120,7 +120,7 @@ module control_unit_tb;
               .expect_alu_src_b  (1'b1),
               .expect_alu_src_a  (1'b0),
               .expect_alu_op     (ALUOP_ADD),
-              .expect_mem_to_reg (2'b10),
+              .expect_mem_to_reg (MEM_TO_REG_PC4),
               .expect_reg_write  (1'b1),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b0),
@@ -131,7 +131,7 @@ module control_unit_tb;
               .expect_alu_src_b  (1'b1),
               .expect_alu_src_a  (1'b0),
               .expect_alu_op     (ALUOP_ADD),
-              .expect_mem_to_reg (2'b00),
+              .expect_mem_to_reg (MEM_TO_REG_ALU),
               .expect_reg_write  (1'b0),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b1),
@@ -142,7 +142,7 @@ module control_unit_tb;
               .expect_alu_src_b  (1'b1),
               .expect_alu_src_a  (1'b1),
               .expect_alu_op     (ALUOP_ADD),
-              .expect_mem_to_reg (2'b10),
+              .expect_mem_to_reg (MEM_TO_REG_PC4),
               .expect_reg_write  (1'b1),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b0),
@@ -153,7 +153,7 @@ module control_unit_tb;
               .expect_alu_src_b  (1'b1),
               .expect_alu_src_a  (1'b0),
               .expect_alu_op     (ALUOP_LUI),
-              .expect_mem_to_reg (2'b00),
+              .expect_mem_to_reg (MEM_TO_REG_ALU),
               .expect_reg_write  (1'b1),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b0),
@@ -164,7 +164,7 @@ module control_unit_tb;
               .expect_alu_src_b  (1'b1),
               .expect_alu_src_a  (1'b1),
               .expect_alu_op     (ALUOP_ADD),
-              .expect_mem_to_reg (2'b00),
+              .expect_mem_to_reg (MEM_TO_REG_ALU),
               .expect_reg_write  (1'b1),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b0),

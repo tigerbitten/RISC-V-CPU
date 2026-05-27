@@ -8,7 +8,7 @@ module control_unit(input [6:0]      opcode,
                     output reg       jump,
                     output reg       mem_read,
                     output reg       mem_write,
-                    output reg [1:0] mem_to_reg, //00-> write from ALU,01->  from mem, 10-> from pc+4
+                    output reg [1:0] mem_to_reg,
                     output reg       reg_write);
 
     always_comb begin
@@ -21,7 +21,7 @@ module control_unit(input [6:0]      opcode,
               jump        = 1'b0;
               mem_read    = 1'b0;
               mem_write   = 1'b0;
-              mem_to_reg  = 2'b00;
+              mem_to_reg  = MEM_TO_REG_ALU;
               reg_write   = 1'b0;
           end
           OP_RTYPE : begin
@@ -32,7 +32,7 @@ module control_unit(input [6:0]      opcode,
               jump        = 1'b0;
               mem_read    = 1'b0;
               mem_write   = 1'b0;
-              mem_to_reg  = 2'b00;
+              mem_to_reg  = MEM_TO_REG_ALU;
               reg_write   = 1'b1;
           end
           OP_ALU_IMM : begin
@@ -43,7 +43,7 @@ module control_unit(input [6:0]      opcode,
               jump        = 1'b0;
               mem_read    = 1'b0;
               mem_write   = 1'b0;
-              mem_to_reg  = 2'b00;
+              mem_to_reg  = MEM_TO_REG_ALU;
               reg_write   = 1'b1;
           end
           OP_LOAD : begin
@@ -54,7 +54,7 @@ module control_unit(input [6:0]      opcode,
               jump        = 1'b0;
               mem_read    = 1'b1;
               mem_write   = 1'b0;
-              mem_to_reg  = 2'b01;
+              mem_to_reg  = MEM_TO_REG_MEM;
               reg_write   = 1'b1;
           end
           OP_JALR : begin
@@ -65,7 +65,7 @@ module control_unit(input [6:0]      opcode,
               jump        = 1'b1;
               mem_read    = 1'b0;
               mem_write   = 1'b0;
-              mem_to_reg  = 2'b10;
+              mem_to_reg  = MEM_TO_REG_PC4;
               reg_write   = 1'b1;
           end
           OP_STORE : begin
@@ -76,7 +76,7 @@ module control_unit(input [6:0]      opcode,
               jump        = 1'b0;
               mem_read    = 1'b0;
               mem_write   = 1'b1;
-              mem_to_reg  = 2'b00;
+              mem_to_reg  = MEM_TO_REG_ALU;
               reg_write   = 1'b0;
           end
           OP_JAL : begin
@@ -87,7 +87,7 @@ module control_unit(input [6:0]      opcode,
               jump        = 1'b1;
               mem_read    = 1'b0;
               mem_write   = 1'b0;
-              mem_to_reg  = 2'b10;
+              mem_to_reg  = MEM_TO_REG_PC4;
               reg_write   = 1'b1;
           end
           OP_LUI : begin
@@ -98,7 +98,7 @@ module control_unit(input [6:0]      opcode,
               jump        = 1'b0;
               mem_read    = 1'b0;
               mem_write   = 1'b0;
-              mem_to_reg  = 2'b00;
+              mem_to_reg  = MEM_TO_REG_ALU;
               reg_write   = 1'b1;
           end
           OP_AUIPC : begin
@@ -109,7 +109,7 @@ module control_unit(input [6:0]      opcode,
               jump        = 1'b0;
               mem_read    = 1'b0;
               mem_write   = 1'b0;
-              mem_to_reg  = 2'b00;
+              mem_to_reg  = MEM_TO_REG_ALU;
               reg_write   = 1'b1;
           end
         endcase
