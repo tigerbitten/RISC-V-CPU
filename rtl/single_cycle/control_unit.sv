@@ -1,3 +1,5 @@
+import riscv_pkg::*;
+
 module control_unit(input [6:0]      opcode,
                     output reg [1:0] alu_op,
                     output reg       alu_src_b, //on when second input comes from imm_gen
@@ -6,13 +8,13 @@ module control_unit(input [6:0]      opcode,
                     output reg       jump,
                     output reg       mem_read,
                     output reg       mem_write,
-                    output reg [1:0] mem_to_reg, //00-> write from ALU,01->  from mem, 10-> pc+4
+                    output reg [1:0] mem_to_reg, //00-> write from ALU,01->  from mem, 10-> from pc+4
                     output reg       reg_write);
 
     always_comb begin
         case (opcode)
-          7'b1100011 : begin //B-Type
-              alu_op      = 2'b01;
+          OP_BRANCH : begin
+              alu_op      = ALUOP_SUB;
               alu_src_b   = 1'b0;
               alu_src_a   = 1'b0;
               branch_ctrl = 1'b1;
@@ -22,8 +24,8 @@ module control_unit(input [6:0]      opcode,
               mem_to_reg  = 2'b00;
               reg_write   = 1'b0;
           end
-          7'b0110011 : begin //R-Type
-              alu_op      = 2'b10;
+          OP_RTYPE : begin
+              alu_op      = ALUOP_RTYPE;
               alu_src_b   = 1'b0;
               alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
@@ -33,8 +35,8 @@ module control_unit(input [6:0]      opcode,
               mem_to_reg  = 2'b00;
               reg_write   = 1'b1;
           end
-          7'b0010011 : begin //I-Type ALU immediate instructions
-              alu_op      = 2'b10;
+          OP_ALU_IMM : begin
+              alu_op      = ALUOP_RTYPE;
               alu_src_b   = 1'b1;
               alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
@@ -44,8 +46,8 @@ module control_unit(input [6:0]      opcode,
               mem_to_reg  = 2'b00;
               reg_write   = 1'b1;
           end
-          7'b0000011 : begin //I-Type load instructions
-              alu_op      = 2'b00;
+          OP_LOAD : begin
+              alu_op      = ALUOP_ADD;
               alu_src_b   = 1'b1;
               alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
@@ -55,19 +57,19 @@ module control_unit(input [6:0]      opcode,
               mem_to_reg  = 2'b01;
               reg_write   = 1'b1;
           end
-          7'b1100111 : begin //I-Type JALR instruction
-              alu_op      = 2'b00;
+          OP_JALR : begin
+              alu_op      = ALUOP_ADD;
               alu_src_b   = 1'b1;
               alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
               jump        = 1'b1;
               mem_read    = 1'b0;
               mem_write   = 1'b0;
-              mem_to_reg  = 2'b10; //special input -- means we write PC+4 to rd register
+              mem_to_reg  = 2'b10;
               reg_write   = 1'b1;
           end
-          7'b0100011 : begin //S-Type instructions
-              alu_op      = 2'b00;
+          OP_STORE : begin
+              alu_op      = ALUOP_ADD;
               alu_src_b   = 1'b1;
               alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
@@ -77,8 +79,8 @@ module control_unit(input [6:0]      opcode,
               mem_to_reg  = 2'b00;
               reg_write   = 1'b0;
           end
-          7'b1101111 : begin //J-Type instructions (JAL)
-              alu_op      = 2'b00;
+          OP_JAL : begin
+              alu_op      = ALUOP_ADD;
               alu_src_b   = 1'b1;
               alu_src_a   = 1'b1;
               branch_ctrl = 1'b0;
@@ -88,8 +90,8 @@ module control_unit(input [6:0]      opcode,
               mem_to_reg  = 2'b10;
               reg_write   = 1'b1;
           end
-          7'b0110111 : begin //U-Type LUI
-              alu_op      = 2'b11;
+          OP_LUI : begin
+              alu_op      = ALUOP_LUI;
               alu_src_b   = 1'b1;
               alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
@@ -99,8 +101,8 @@ module control_unit(input [6:0]      opcode,
               mem_to_reg  = 2'b00;
               reg_write   = 1'b1;
           end
-          7'b0010111 : begin //U-Type AUIPC
-              alu_op      = 2'b00;
+          OP_AUIPC : begin
+              alu_op      = ALUOP_ADD;
               alu_src_b   = 1'b1;
               alu_src_a   = 1'b1;
               branch_ctrl = 1'b0;
