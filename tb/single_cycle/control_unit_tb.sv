@@ -5,7 +5,8 @@ module control_unit_tb;
     opcode_t     opcode;
     mem_to_reg_t mem_to_reg;
     alu_op_t     alu_op;
-    reg       branch_ctrl, mem_read, mem_write, alu_src_b, alu_src_a, reg_write, jump;
+    jump_t       jump;
+    reg       branch_ctrl, mem_read, mem_write, alu_src_b, alu_src_a, reg_write;
     integer   failed;
     
     control_unit DUT (.opcode      (opcode),
@@ -28,7 +29,7 @@ module control_unit_tb;
                 input expect_alu_src_b,
                 input expect_alu_src_a,
                 input expect_reg_write,
-                input expect_jump);
+                input jump_t expect_jump);
         begin
             opcode = test_opcode;
             failed = 0;
@@ -63,7 +64,7 @@ module control_unit_tb;
             end
             
             if (expect_jump !== jump) begin
-                $display("FAIL: jump error -- jump=%b expected=%b", jump, expect_jump);
+                $display("FAIL: jump error -- jump=%s expected=%s", jump.name(), expect_jump.name());
                 failed = 1;
             end
 
@@ -82,7 +83,7 @@ module control_unit_tb;
               .expect_reg_write  (1'b0),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b0),
-              .expect_jump       (1'b0));
+              .expect_jump       (JUMP_NONE));
         
         check(.test_opcode       (OP_RTYPE),
               .expect_branch     (1'b0),
@@ -93,7 +94,7 @@ module control_unit_tb;
               .expect_reg_write  (1'b1),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b0),
-              .expect_jump       (1'b0));
+              .expect_jump       (JUMP_NONE));
 
         check(.test_opcode       (OP_ALU_IMM),
               .expect_branch     (1'b0),
@@ -104,7 +105,7 @@ module control_unit_tb;
               .expect_reg_write  (1'b1),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b0),
-              .expect_jump       (1'b0));
+              .expect_jump       (JUMP_NONE));
 
         check(.test_opcode       (OP_LOAD),
               .expect_branch     (1'b0),
@@ -115,7 +116,7 @@ module control_unit_tb;
               .expect_reg_write  (1'b1),
               .expect_mem_read   (1'b1),
               .expect_mem_write  (1'b0),
-              .expect_jump       (1'b0));
+              .expect_jump       (JUMP_NONE));
 
         check(.test_opcode       (OP_JALR),
               .expect_branch     (1'b0),
@@ -126,7 +127,7 @@ module control_unit_tb;
               .expect_reg_write  (1'b1),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b0),
-              .expect_jump       (1'b1));
+              .expect_jump       (JUMP_JALR));
 
         check(.test_opcode       (OP_STORE),
               .expect_branch     (1'b0),
@@ -137,7 +138,7 @@ module control_unit_tb;
               .expect_reg_write  (1'b0),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b1),
-              .expect_jump       (1'b0));
+              .expect_jump       (JUMP_NONE));
         
         check(.test_opcode       (OP_JAL),
               .expect_branch     (1'b0),
@@ -148,7 +149,7 @@ module control_unit_tb;
               .expect_reg_write  (1'b1),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b0),
-              .expect_jump       (1'b1));
+              .expect_jump       (JUMP_JAL));
 
         check(.test_opcode       (OP_LUI),
               .expect_branch     (1'b0),
@@ -159,7 +160,7 @@ module control_unit_tb;
               .expect_reg_write  (1'b1),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b0),
-              .expect_jump       (1'b0));
+              .expect_jump       (JUMP_NONE));
 
         check(.test_opcode       (OP_AUIPC),
               .expect_branch     (1'b0),
@@ -170,6 +171,6 @@ module control_unit_tb;
               .expect_reg_write  (1'b1),
               .expect_mem_read   (1'b0),
               .expect_mem_write  (1'b0),
-              .expect_jump       (1'b0));
+              .expect_jump       (JUMP_NONE));
     end
 endmodule

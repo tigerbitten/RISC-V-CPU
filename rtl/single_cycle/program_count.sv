@@ -4,7 +4,7 @@ module program_count(input             clk,
                      input             reset,
                      input [2:0]       funct3,
                      input [31:0]      pc_in,
-                     input             jump,
+                     input [1:0]       jump,
                      input             branch_ctrl,
                      input             zero,
                      input             negative,
@@ -25,10 +25,11 @@ module program_count(input             clk,
     always_comb begin
         next_pc = pc_in + 4; //default
         
-        if (jump) begin
+        if (jump == JUMP_JALR) begin //LSB of JALR target must be 0 according to ISA
+            next_pc = {alu_result[31:1], 1'b0};
+        end else if (jump == JUMP_JAL) begin
             next_pc = alu_result;
-        end
-        else if (branch_ctrl) begin
+        end else if (branch_ctrl) begin
             case (funct3)
               FUNCT3_BEQ  : if (zero)                   next_pc = alu_result;
               FUNCT3_BNE  : if (!zero)                  next_pc = alu_result;
