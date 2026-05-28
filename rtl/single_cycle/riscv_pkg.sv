@@ -56,4 +56,9 @@ package riscv_pkg;
                             MEM_TO_REG_PC4 = 2'b10  //write PC + 4 into register file
                             } mem_to_reg_t;
     
+    typedef enum reg [1:0] {
+                            JUMP_NONE = 2'b00,
+                            JUMP_JAL  = 2'b01,
+                            JUMP_JALR = 2'b10
+                            } jump_t;
 endpackage
