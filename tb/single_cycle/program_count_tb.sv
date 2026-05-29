@@ -54,6 +54,7 @@ module program_count_tb;
         carry       = 1'b1;
         zero        = 1'b1;
         negative    = 1'b1;
+        overflow    = 1'b0;
         alu_result  = 32'hFFFF_FFFF;
         check(32'h0);
         reset = 0;
@@ -66,6 +67,7 @@ module program_count_tb;
         carry       = 1'bx;
         zero        = 1'bx;
         negative    = 1'bx;
+        overflow    = 1'b0;
         alu_result  = 32'h0000_000F;
         check(32'h0000_000F);
 
@@ -77,6 +79,7 @@ module program_count_tb;
         carry       = 1'bx;
         zero        = 1'bx;
         negative    = 1'bx;
+        overflow    = 1'b0;
         alu_result  = 32'h0000_000F;
         check(32'h0000_000E); //bit 0 must be 0
 
@@ -88,6 +91,7 @@ module program_count_tb;
         carry       = 1'bx;
         zero        = 1'b1;
         negative    = 1'bx;
+        overflow    = 1'b0;
         alu_result  = 32'h0000_EEEE;
         check(32'h0000_EEEE);
 
@@ -99,7 +103,152 @@ module program_count_tb;
         carry       = 1'bx;
         zero        = 1'b0;
         negative    = 1'bx;
+        overflow    = 1'b0;
         alu_result  = 32'h0000_EEEE;
+        check(32'h0000_0004);
+
+        //BNE check (branch taken)
+        funct3      = FUNCT3_BNE;
+        jump        = JUMP_NONE;
+        branch_ctrl = 1'b1;
+        pc_in       = 32'h0000_0000;
+        carry       = 1'bx;
+        zero        = 1'b0;
+        negative    = 1'bx;
+        overflow    = 1'b0;
+        alu_result  = 32'h0000_DDDD;
+        check(32'h0000_DDDD);
+
+        //BNE check (branch not taken)
+        funct3      = FUNCT3_BNE;
+        jump        = JUMP_NONE;
+        branch_ctrl = 1'b1;
+        pc_in       = 32'h0000_0000;
+        carry       = 1'bx;
+        zero        = 1'b1;
+        negative    = 1'bx;
+        overflow    = 1'b0;
+        alu_result  = 32'h0000_EEEE;
+        check(32'h0000_0004);
+
+        //BLT check (branch taken)
+        funct3      = FUNCT3_BLT;
+        jump        = JUMP_NONE;
+        branch_ctrl = 1'b1;
+        pc_in       = 32'h0000_0000;
+        carry       = 1'bx;
+        zero        = 1'b0;
+        negative    = 1'b1;
+        overflow    = 1'b0;
+        alu_result  = 32'h0000_AFDE;
+        check(32'h0000_AFDE);
+
+        //BLT check (branch not taken)
+        funct3      = FUNCT3_BLT;
+        jump        = JUMP_NONE;
+        branch_ctrl = 1'b1;
+        pc_in       = 32'h0000_000C;
+        carry       = 1'bx;
+        zero        = 1'b0;
+        negative    = 1'b1;
+        overflow    = 1'b1;
+        alu_result  = 32'h0000_EEEE;
+        check(32'h0000_0010);
+
+        //BGE check (branch taken)
+        funct3      = FUNCT3_BGE;
+        jump        = JUMP_NONE;
+        branch_ctrl = 1'b1;
+        pc_in       = 32'h0000_0000;
+        carry       = 1'bx;
+        zero        = 1'b0;
+        negative    = 1'b0;
+        overflow    = 1'b0;
+        alu_result  = 32'h00CC_AFDE;
+        check(32'h00CC_AFDE);
+
+        //BGE check (branch not taken)
+        funct3      = FUNCT3_BGE;
+        jump        = JUMP_NONE;
+        branch_ctrl = 1'b1;
+        pc_in       = 32'h000F_0004;
+        carry       = 1'bx;
+        zero        = 1'b0;
+        negative    = 1'b0;
+        overflow    = 1'b1;
+        alu_result  = 32'hFFFF_EEEE;
+        check(32'h000F_0008);
+
+        //BLTU check (branch taken)
+        funct3      = FUNCT3_BGE;
+        jump        = JUMP_NONE;
+        branch_ctrl = 1'b1;
+        pc_in       = 32'h0000_0000;
+        carry       = 1'b1;
+        zero        = 1'b0;
+        negative    = 1'b0;
+        overflow    = 1'b0;
+        alu_result  = 32'h0DCC_AFDE;
+        check(32'h0DCC_AFDE);
+
+        //BLTU check (branch not taken)
+        funct3      = FUNCT3_BGE;
+        jump        = JUMP_NONE;
+        branch_ctrl = 1'b1;
+        pc_in       = 32'h000F_0004;
+        carry       = 1'b0;
+        zero        = 1'b0;
+        negative    = 1'b0;
+        overflow    = 1'b1;
+        alu_result  = 32'hFFFF_EEEE;
+        check(32'h000F_0008);
+
+        //BGEU check (branch taken)
+        funct3      = FUNCT3_BGE;
+        jump        = JUMP_NONE;
+        branch_ctrl = 1'b1;
+        pc_in       = 32'h0000_0000;
+        carry       = 1'b0;
+        zero        = 1'b0;
+        negative    = 1'b0;
+        overflow    = 1'b0;
+        alu_result  = 32'h0DCC_AFDE;
+        check(32'h0DCC_AFDE);
+
+        //BGEU check (branch not taken)
+        funct3      = FUNCT3_BGE;
+        jump        = JUMP_NONE;
+        branch_ctrl = 1'b1;
+        pc_in       = 32'h000F_0004;
+        carry       = 1'b1;
+        zero        = 1'b0;
+        negative    = 1'b0;
+        overflow    = 1'b1;
+        alu_result  = 32'hFFFF_EEEE;
+        check(32'h000F_0008);
+
+        //non jump non branch test (should be PC+4)
+        funct3      = FUNCT3_BGE;
+        jump        = JUMP_NONE;
+        branch_ctrl = 1'b0;
+        pc_in       = 32'h000F_0008;
+        carry       = 1'b1;
+        zero        = 1'b0;
+        negative    = 1'b0;
+        overflow    = 1'b1;
+        alu_result  = 32'hFFFF_EEEE;
+        check(32'h000F_000C);
+
+        //JALR LSB clearing test
+        funct3      = FUNCT3_BGE;
+        jump        = JUMP_JALR;
+        branch_ctrl = 1'b0;
+        pc_in       = 32'h0000_0000;
+        carry       = 1'b1;
+        zero        = 1'b0;
+        negative    = 1'b0;
+        overflow    = 1'b1;
+        alu_result  = 32'h0000_0005;
         check(32'h0000_0004);
     end
 endmodule    
