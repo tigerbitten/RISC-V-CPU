@@ -4,7 +4,7 @@ module program_count_tb;
     branch_funct3_t funct3;
     jump_t          jump;
     reg clk, reset, branch_ctrl, zero, negative, overflow, carry;
-    reg [31:0] pc_in, pc_out, alu_result;
+    reg [31:0] pc_in, pc_out, pc_plus_4, alu_result;
     
     program_count dut (.clk         (clk),
                        .reset       (reset),
@@ -17,6 +17,7 @@ module program_count_tb;
                        .overflow    (overflow),
                        .carry       (carry),
                        .alu_result  (alu_result),
+                       .pc_plus_4   (pc_plus_4),
                        .pc_out      (pc_out));
 
     always begin
@@ -32,15 +33,17 @@ module program_count_tb;
         end
     endtask
 
-    task check (input [31:0] expected_pc);
+    task check (input [31:0] expected_pc,
+                input [31:0] expected_pc_plus_4);
         begin
             
             tick();
             
-            $display("funct3=%s pc_in=%h alu_result=%h jump=%s branch=%b carry=%b zero=%b overflow=%b negative=%b pc_out=%h", funct3.name(), pc_in, alu_result, jump.name(), branch_ctrl, carry, zero, overflow, negative, pc_out);
+            $display("funct3=%s pc_in=%h alu_result=%h pc+4=%h jump=%s branch=%b carry=%b zero=%b overflow=%b negative=%b pc_out=%h", funct3.name(), pc_in, alu_result, pc_plus_4, jump.name(), branch_ctrl, carry, zero, overflow, negative, pc_out);
             
-            if (expected_pc !== pc_out)
-                $display("FAIL: pc_out=%h expected=%h", pc_out, expected_pc);
+            if (expected_pc !== pc_out || expected_pc_plus_4 !== pc_plus_4)
+                $display("FAIL: pc_out=%h expected_out=%h pc_plus_4=%h expected+4=%h",
+                         pc_out, expected_pc, pc_plus_4, expected_pc_plus_4);
         end
     endtask
 
@@ -56,7 +59,7 @@ module program_count_tb;
         negative    = 1'b1;
         overflow    = 1'b0;
         alu_result  = 32'hFFFF_FFFF;
-        check(32'h0);
+        check(32'h0, 32'h0F0F_F0F4);
         reset = 0;
 
         //JAL check
@@ -69,7 +72,7 @@ module program_count_tb;
         negative    = 1'bx;
         overflow    = 1'b0;
         alu_result  = 32'h0000_000F;
-        check(32'h0000_000F);
+        check(32'h0000_000F, 32'h0000_0004);
 
         //JALR check
         funct3      = FUNCT3_BGEU;
@@ -81,7 +84,7 @@ module program_count_tb;
         negative    = 1'bx;
         overflow    = 1'b0;
         alu_result  = 32'h0000_000F;
-        check(32'h0000_000E); //bit 0 must be 0
+        check(32'h0000_000E, 32'h0000_0004); //bit 0 must be 0 for pc_out JALR
 
         //BEQ check (branch taken)
         funct3      = FUNCT3_BEQ;
@@ -93,7 +96,7 @@ module program_count_tb;
         negative    = 1'bx;
         overflow    = 1'b0;
         alu_result  = 32'h0000_EEEE;
-        check(32'h0000_EEEE);
+        check(32'h0000_EEEE, 32'h0000_0004);
 
         //BEQ check (branch not taken)
         funct3      = FUNCT3_BEQ;
@@ -105,7 +108,7 @@ module program_count_tb;
         negative    = 1'bx;
         overflow    = 1'b0;
         alu_result  = 32'h0000_EEEE;
-        check(32'h0000_0004);
+        check(32'h0000_0004, 32'h0000_0004);
 
         //BNE check (branch taken)
         funct3      = FUNCT3_BNE;
@@ -117,7 +120,7 @@ module program_count_tb;
         negative    = 1'bx;
         overflow    = 1'b0;
         alu_result  = 32'h0000_DDDD;
-        check(32'h0000_DDDD);
+        check(32'h0000_DDDD, 32'h0000_0004);
 
         //BNE check (branch not taken)
         funct3      = FUNCT3_BNE;
@@ -129,7 +132,7 @@ module program_count_tb;
         negative    = 1'bx;
         overflow    = 1'b0;
         alu_result  = 32'h0000_EEEE;
-        check(32'h0000_0004);
+        check(32'h0000_0004, 32'h0000_0004);
 
         //BLT check (branch taken)
         funct3      = FUNCT3_BLT;
@@ -141,7 +144,7 @@ module program_count_tb;
         negative    = 1'b1;
         overflow    = 1'b0;
         alu_result  = 32'h0000_AFDE;
-        check(32'h0000_AFDE);
+        check(32'h0000_AFDE, 32'h0000_0004);
 
         //BLT check (branch not taken)
         funct3      = FUNCT3_BLT;
@@ -153,7 +156,7 @@ module program_count_tb;
         negative    = 1'b1;
         overflow    = 1'b1;
         alu_result  = 32'h0000_EEEE;
-        check(32'h0000_0010);
+        check(32'h0000_0010, 32'h0000_0010);
 
         //BGE check (branch taken)
         funct3      = FUNCT3_BGE;
@@ -165,7 +168,7 @@ module program_count_tb;
         negative    = 1'b0;
         overflow    = 1'b0;
         alu_result  = 32'h00CC_AFDE;
-        check(32'h00CC_AFDE);
+        check(32'h00CC_AFDE, 32'h0000_0004);
 
         //BGE check (branch not taken)
         funct3      = FUNCT3_BGE;
@@ -177,7 +180,7 @@ module program_count_tb;
         negative    = 1'b0;
         overflow    = 1'b1;
         alu_result  = 32'hFFFF_EEEE;
-        check(32'h000F_0008);
+        check(32'h000F_0008, 32'h000F_0008);
 
         //BLTU check (branch taken)
         funct3      = FUNCT3_BGE;
@@ -189,7 +192,7 @@ module program_count_tb;
         negative    = 1'b0;
         overflow    = 1'b0;
         alu_result  = 32'h0DCC_AFDE;
-        check(32'h0DCC_AFDE);
+        check(32'h0DCC_AFDE, 32'h0000_0004);
 
         //BLTU check (branch not taken)
         funct3      = FUNCT3_BGE;
@@ -201,7 +204,7 @@ module program_count_tb;
         negative    = 1'b0;
         overflow    = 1'b1;
         alu_result  = 32'hFFFF_EEEE;
-        check(32'h000F_0008);
+        check(32'h000F_0008, 32'h000F_0008);
 
         //BGEU check (branch taken)
         funct3      = FUNCT3_BGE;
@@ -213,7 +216,7 @@ module program_count_tb;
         negative    = 1'b0;
         overflow    = 1'b0;
         alu_result  = 32'h0DCC_AFDE;
-        check(32'h0DCC_AFDE);
+        check(32'h0DCC_AFDE, 32'h0000_0004);
 
         //BGEU check (branch not taken)
         funct3      = FUNCT3_BGE;
@@ -225,7 +228,7 @@ module program_count_tb;
         negative    = 1'b0;
         overflow    = 1'b1;
         alu_result  = 32'hFFFF_EEEE;
-        check(32'h000F_0008);
+        check(32'h000F_0008, 32'h000F_0008);
 
         //non jump non branch test (should be PC+4)
         funct3      = FUNCT3_BGE;
@@ -237,7 +240,7 @@ module program_count_tb;
         negative    = 1'b0;
         overflow    = 1'b1;
         alu_result  = 32'hFFFF_EEEE;
-        check(32'h000F_000C);
+        check(32'h000F_000C, 32'h000F_000C);
 
         //JALR LSB clearing test
         funct3      = FUNCT3_BGE;
@@ -249,6 +252,6 @@ module program_count_tb;
         negative    = 1'b0;
         overflow    = 1'b1;
         alu_result  = 32'h0000_0005;
-        check(32'h0000_0004);
+        check(32'h0000_0004, 32'h0000_0004);
     end
 endmodule    

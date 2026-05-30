@@ -11,6 +11,7 @@ module program_count(input             clk,
                      input             overflow,
                      input             carry,
                      input [31:0]      alu_result,
+                     output reg [31:0] pc_plus_4,
                      output reg [31:0] pc_out);
     
     reg [31:0] next_pc;
@@ -23,7 +24,8 @@ module program_count(input             clk,
     end
 
     always_comb begin
-        next_pc = pc_in + 4; //default
+        next_pc   = pc_in + 4; //default
+        pc_plus_4 = pc_in + 4; //for MUX for writeback to register
         
         if (jump == JUMP_JALR) begin //LSB of JALR target must be 0 according to ISA
             next_pc = {alu_result[31:1], 1'b0};
