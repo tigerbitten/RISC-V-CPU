@@ -30,7 +30,7 @@ module cpu_top_tb;
 
     initial begin
         reset = 1;
-        #10;
+        tick();
         reset = 0;
         tick();
         check_reg(1, 32'd5);
