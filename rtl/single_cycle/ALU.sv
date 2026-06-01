@@ -13,7 +13,7 @@ module ALU(input [31:0]      a,
     
     assign zero      = (result == 0);
     assign negative  = adder_out[31];
-    assign carry     = !adder_out[32];
+    assign carry     = adder_out[32];
     
     assign overflow  = (alu_control == ALU_SUB) ? ((a[31] != b[31]) && (a[31] != adder_out[31])) : (a[31] == b[31]) && (a[31] != adder_out[31]); //compute overflow based off subtraction or addition operation
     assign adder_out = (alu_control == ALU_SUB || alu_control == ALU_SLT || alu_control == ALU_SLTU) ? {1'b0, a} + {1'b0, (~b)} + 1 : {1'b0, a} + {1'b0, b}; //2's complement addition for signals that need subtraction
@@ -26,8 +26,8 @@ module ALU(input [31:0]      a,
           ALU_XOR           : result = a ^ b;
           ALU_SLL           : result = a << b[4:0];
           ALU_SRL           : result = a >> b[4:0];
-          ALU_SLT           : result = negative ^ overflow;
-          ALU_SLTU          : result = carry;
+          ALU_SLT           : result = {31'b0, negative ^ overflow};
+          ALU_SLTU          : result = {31'b0, !carry};
           ALU_SRA           : result = $signed(a) >>> b[4:0];
           ALU_LUI           : result = b; //LUI -- simply passes b through to the output
         endcase

@@ -48,11 +48,11 @@ module ALU_tb();
         check(32'hF0000000, 32'h00000011, ALU_ADD, 32'hF0000011, 1'b0, 1'b1, 1'b0, 1'bx); //test neg flag
 
         // SUB
-        check(32'd140, 32'd21, ALU_SUB, 32'd119, 1'd0, 1'b0, 1'b0, 1'b0);
-        check(32'd14,  32'd15, ALU_SUB, 32'hFFFF_FFFF, 1'd0, 1'b1, 1'b0, 1'b1);
-        check(32'h80000000, 32'h7FFFFFFF, ALU_SUB, 32'dx, 1'b0, 1'bx, 1'b1, 1'b0); //test neg signed overflow
-        check(32'h7FFFFFFF, 32'hF0000000, ALU_SUB, 32'dx, 1'b0, 1'bx, 1'b1, 1'b1); //test pos signed overflow
-        check(32'hF000F000, 32'h00000011, ALU_SUB, 32'hF000EFEF, 1'b0, 1'b1, 1'b0, 1'b0); //test neg flag
+        check(32'd140, 32'd21, ALU_SUB, 32'd119, 1'd0, 1'b0, 1'b0, 1'b1);
+        check(32'd14,  32'd15, ALU_SUB, 32'hFFFF_FFFF, 1'd0, 1'b1, 1'b0, 1'b0);
+        check(32'h80000000, 32'h7FFFFFFF, ALU_SUB, 32'dx, 1'b0, 1'bx, 1'b1, 1'b1); //test neg signed overflow
+        check(32'h7FFFFFFF, 32'hF0000000, ALU_SUB, 32'dx, 1'b0, 1'bx, 1'b1, 1'b0); //test pos signed overflow
+        check(32'hF000F000, 32'h00000011, ALU_SUB, 32'hF000EFEF, 1'b0, 1'b1, 1'b0, 1'b1); //test neg flag
 
         // XOR
         check(32'hFFFF_FFFF,  32'd0, ALU_XOR, 32'hFFFF_FFFF, 1'd0, 1'bx, 1'bx, 1'bx);
