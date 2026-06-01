@@ -1,6 +1,6 @@
 # RISC-V CPU
  
-A RV32I RISC-V processor implementation written in SystemVerilog. Work in progress. Core Datapath complete, still working on verification.
+A RV32I RISC-V processor implementation written in SystemVerilog. Work in progress. Core datapath complete, still working on verification.
  
 ## Status
  
@@ -24,7 +24,7 @@ Not yet synthesized to hardware.
 
 ![Datapath Diagram](docs/box_diagram_cpu.png)
 
-Link to more interactive Miro Board:
+Link to more interactive
 [Miro Board](https://miro.com/app/board/uXjVHM7kwYA=/?share_link_id=328386992955)
  
 ## Planned
