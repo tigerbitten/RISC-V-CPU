@@ -1,0 +1,45 @@
+# Load immediates
+addi x1, x0, 5        # x1 = 5
+addi x2, x0, 3        # x2 = 3
+
+# R-type arithmetic
+add  x3, x1, x2       # x3 = 8
+sub  x4, x1, x2       # x4 = 2
+and  x5, x1, x2       # x5 = 1  101 & 011 = 001
+or   x6, x1, x2       # x6 = 7  101 | 011 = 111
+xor  x7, x1, x2       # x7 = 6  101 ^ 011 = 110
+slt  x8, x2, x1       # x8 = 1  (3 < 5 signed)
+sltu x9, x2, x1       # x9 = 1  (3 < 5 unsigned)
+
+# Shifts
+slli x10, x1, 2       # x10 = 20  101 << 2   = 10100
+srli x11, x10, 1      # x11 = 10  10100 >> 1 = 01010
+addi x12, x0, -8      # x12 = -8  
+srai x13, x12, 1      # x13 = -4  1000 >>> 1 = 1100 = -4
+
+# Store and load word
+addi x14, x0, 100     # x14 = 100
+sw   x14, 0(x0)       # mem[0] = 100
+lw   x15, 0(x0)       # x15 = 100
+
+# Store and load byte
+addi x16, x0, 65      # x16 = 65
+sb   x16, 4(x0)       # mem[4] = 65
+lb   x17, 4(x0)       # x17 = 65
+
+# BEQ taken
+addi x18, x0, 0       # x18 = 0
+beq  x1, x1, +8       # taken, skip next
+addi x18, x0, 99      # SKIPPED
+addi x18, x0, 8       # x18 = 8
+
+# BNE taken
+addi x19, x0, 0       # x19 = 0
+bne  x1, x2, +8       # taken (5 != 3), skip next
+addi x19, x0, 99      # SKIPPED
+addi x19, x0, 9       # x19 = 9
+
+# JAL
+jal  x20, +8          # x20 = PC+4, skip next
+addi x20, x0, 99      # SKIPPED
+                      # x20 = address of jal + 4
