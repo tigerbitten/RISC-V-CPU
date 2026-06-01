@@ -44,7 +44,7 @@ module cpu_top(input clk,
                       .pc_plus_4   (pc_plus_4),
                       .pc_out      (pc_out));
 
-    instruction_memory #(.MEM_FILE("addi_test_one.mem")) imem (.program_count (pc_out),
+    instruction_memory #(.MEM_FILE("program_test_1.mem")) imem (.program_count (pc_out),
                                                                .instruction   (instruction));
 
     register_file reg_file (.clk       (clk),

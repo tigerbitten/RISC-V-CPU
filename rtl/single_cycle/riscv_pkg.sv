@@ -62,4 +62,10 @@ package riscv_pkg;
                             JUMP_JAL  = 2'b10
                             } jump_t;
     
+    typedef enum reg [1:0] {
+                            MEM_WIDTH_BYTE     = 2'b00,
+                            MEM_WIDTH_HALFWORD = 2'b01,
+                            MEM_WIDTH_WORD     = 2'b10
+                            } mem_width_t; //for cpu_top tb
+    
 endpackage
