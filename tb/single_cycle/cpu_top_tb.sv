@@ -17,14 +17,19 @@ module cpu_top_tb;
     task tick();
         begin
             @(posedge clk) #1;
+//            $display("PC:%h - %d", dut.pc.pc_out, dut.pc.pc_out);
         end
     endtask
 
     task check_reg(input [4:0] register_num,
                    input [31:0] expected_val);
         begin
-            if (dut.reg_file.registers[register_num] !== expected_val)
+            $display("PC:%h, %d instruction:%h", dut.pc.pc_out, dut.pc.pc_out, dut.imem.instruction);
+            if (dut.reg_file.registers[register_num] !== expected_val) begin
                 $display("FAIL: register=%d val=%h expected=%h", register_num, dut.reg_file.registers[register_num], expected_val);
+                $display("alu_op=%b alu_ctrl=%b", dut.ctrl_unit.alu_op, dut.alu_ctrl.alu_control);
+                $display("funct3=%b funct7_30=%b", dut.alu_ctrl.funct3, cpu_top.alu_ctrl.funct7_30);
+            end
             else
                 $display("PASS: register=%d val=%h", register_num, expected_val);
         end
@@ -42,8 +47,10 @@ module cpu_top_tb;
               MEM_WIDTH_WORD     : actual = {dut.data_mem.memory[addr+3], dut.data_mem.memory[addr+2], dut.data_mem.memory[addr+1], dut.data_mem.memory[addr]};
             endcase
 
-            if (actual !== expected_val)
+            if (actual !== expected_val) begin
                 $display("FAIL: actual=%h expected=%h width=%s", actual, expected_val, width.name());
+                $display("FAIL: alu_op=%s alu_ctrl=%s", dut.ctrl_unit.alu_op, dut.alu_ctrl.alu_control);
+            end
             else
                 $display("PASS: actual=%h expected=%h width=%s", actual, expected_val, width.name());
         end
@@ -52,27 +59,28 @@ module cpu_top_tb;
     initial begin
         reset = 1;
         tick();
+        tick();
         reset = 0;
-        
+        check_reg(1, 32'd0);
 //---CHECKS FOR program_test_1.mem---        
         //check load immediates section
         tick();
-        tick();
         check_reg(1, 32'd5);
+        tick();
         check_reg(2, 32'd3);
-
-        //check R-type arithmetic section
-        for (int i = 0; i < 7; i++) begin
-            tick();
-        end
+        tick();
         check_reg(3, 32'd8);
+        tick();
         check_reg(4, 32'd2);
+        tick();
         check_reg(5, 32'd1);
+        tick();
         check_reg(6, 32'd7);
+        tick();
         check_reg(7, 32'd6);
-        check_reg(1, 32'd5); //
-        check_reg(2, 32'd3); //
+        tick();
         check_reg(8, 32'd1); //currently failing
+        tick();
         check_reg(9, 32'd1);
     end
     
