@@ -9,15 +9,22 @@ module ALU(input [31:0]      a,
            output reg        overflow,
            output            carry);
 
-    wire [32:0] adder_out;
+    wire [32:0] a_actual, b_actual, adder_out;
+    wire        sub_op = (alu_control == ALU_SUB || alu_control == ALU_SLT || alu_control == ALU_SLTU);
     
     assign zero      = (result == 0);
     assign negative  = adder_out[31];
     assign carry     = adder_out[32];
-    
-    assign overflow  = (alu_control == ALU_SUB) ? ((a[31] != b[31]) && (a[31] != adder_out[31])) : (a[31] == b[31]) && (a[31] != adder_out[31]); //compute overflow based off subtraction or addition operation
-    assign adder_out = (alu_control == ALU_SUB || alu_control == ALU_SLT || alu_control == ALU_SLTU) ? {1'b0, a} + {1'b0, (~b)} + 1 : {1'b0, a} + {1'b0, b}; //2's complement addition for signals that need subtraction
 
+    assign a_actual  = {1'b0, a};
+    assign b_actual  = sub_op ? {1'b0, (~b)} + 1 : {1'b0, b};
+    
+    assign overflow  = sub_op
+                       ? ((a[31] != b[31]) && (a[31] != adder_out[31])) //intentionally using sign bits
+                       : (a[31] == b[31])  && (a[31] != adder_out[31]); //of a and b, not a_actual, b_actual
+
+    assign adder_out = a_actual + b_actual;
+    
     always_comb begin
         case (alu_control)
           ALU_AND           : result = a & b;
