@@ -36,7 +36,7 @@ module control_unit(input  opcode_t     opcode,
               reg_write   = 1'b1;
           end
           OP_ALU_IMM : begin
-              alu_op      = ALUOP_RTYPE;
+              alu_op      = ALUOP_ITYPE;
               alu_src_b   = 1'b1;
               alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;

@@ -40,11 +40,11 @@ module alu_control_tb;
         //ALUop = 01 means sub regardless of funct fields
         check_alu_control(ALUOP_SUB, 3'bxxx, 1'bx, ALU_SUB);
         
-// R-Type/I-Type -------------------------------
+// R-Type -------------------------------
         check_alu_control(ALUOP_RTYPE, 3'b000, 1'b0, ALU_ADD); //Add
         check_alu_control(ALUOP_RTYPE, 3'b000, 1'b1, ALU_SUB); //Sub
         check_alu_control(ALUOP_RTYPE, 3'b111, 1'b0, ALU_AND); //And
-        check_alu_control(ALUOP_RTYPE, 3'b110, 1'b0, ALU_OR); //Or
+        check_alu_control(ALUOP_RTYPE, 3'b110, 1'b0, ALU_OR);  //Or
         check_alu_control(ALUOP_RTYPE, 3'b001, 1'b0, ALU_SLL); //SLL
         check_alu_control(ALUOP_RTYPE, 3'b010, 1'b0, ALU_SLT); //SLT
         check_alu_control(ALUOP_RTYPE, 3'b011, 1'b0, ALU_SLTU); //SLTU
@@ -52,6 +52,19 @@ module alu_control_tb;
         check_alu_control(ALUOP_RTYPE, 3'b101, 1'b0, ALU_SRL); //SRL
         check_alu_control(ALUOP_RTYPE, 3'b101, 1'b1, ALU_SRA); //SRA
 
+        
+// I-Type -------------------------------
+        check_alu_control(ALUOP_ITYPE, 3'b000, 1'b0, ALU_ADD); //Add
+        check_alu_control(ALUOP_ITYPE, 3'b111, 1'b0, ALU_AND); //And
+        check_alu_control(ALUOP_ITYPE, 3'b110, 1'b0, ALU_OR);  //Or
+        check_alu_control(ALUOP_ITYPE, 3'b001, 1'b0, ALU_SLL); //SLL
+        check_alu_control(ALUOP_ITYPE, 3'b010, 1'b0, ALU_SLT); //SLT
+        check_alu_control(ALUOP_ITYPE, 3'b011, 1'b0, ALU_SLTU); //SLTU
+        check_alu_control(ALUOP_ITYPE, 3'b100, 1'b0, ALU_XOR); //XOR
+        check_alu_control(ALUOP_ITYPE, 3'b101, 1'b0, ALU_SRL); //SRL
+        check_alu_control(ALUOP_ITYPE, 3'b101, 1'b1, ALU_SRA); //SRA
+        
+// LUI
         check_alu_control(ALUOP_LUI, 3'bxxx, 1'bx, ALU_LUI); //LUI
         $finish;
     end

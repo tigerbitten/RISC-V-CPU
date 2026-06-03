@@ -16,6 +16,9 @@ module cpu_top_tb;
     
     task tick();
         begin
+            $display("PC:%d instruction:%h", dut.pc.pc_out, dut.imem.instruction);
+            $display("   alu_op=%b alu_ctrl=%b", dut.ctrl_unit.alu_op, dut.alu_ctrl.alu_control);
+            $display("       funct3=%b funct7_30=%b", dut.alu_ctrl.funct3, dut.alu_ctrl.funct7_30);
             @(posedge clk) #1;
         end
     endtask
@@ -23,11 +26,11 @@ module cpu_top_tb;
     task check_reg(input [4:0] register_num,
                    input [31:0] expected_val);
         begin
-            $display("PC:%d instruction:%h", dut.pc.pc_out, dut.imem.instruction);
+//            $display("PC:%d instruction:%h", dut.pc.pc_out, dut.imem.instruction);
             if (dut.reg_file.registers[register_num] !== expected_val) begin
                 $display("FAIL: register=%d val=%h expected=%h", register_num, dut.reg_file.registers[register_num], expected_val);
-                $display("alu_op=%b alu_ctrl=%b", dut.ctrl_unit.alu_op, dut.alu_ctrl.alu_control);
-                $display("funct3=%b funct7_30=%b", dut.alu_ctrl.funct3, dut.alu_ctrl.funct7_30);
+  //              $display("alu_op=%b alu_ctrl=%b", dut.ctrl_unit.alu_op, dut.alu_ctrl.alu_control);
+    //            $display("funct3=%b funct7_30=%b", dut.alu_ctrl.funct3, dut.alu_ctrl.funct7_30);
             end
             else
                 $display("PASS: register=%d val=%h", register_num, expected_val);
@@ -68,6 +71,7 @@ module cpu_top_tb;
         check_reg(1, 32'd5);
         tick();
         check_reg(2, 32'd3);
+        //check R-Type arithmetic section
         tick();
         check_reg(3, 32'd8);
         tick();
@@ -82,6 +86,15 @@ module cpu_top_tb;
         check_reg(8, 32'd1);
         tick();
         check_reg(9, 32'd1);
+        //check shifts section
+        tick();
+        check_reg(10, 32'd20);
+        tick();
+        check_reg(11, 32'd10);
+        tick();
+        check_reg(12, 32'hFFFF_FFF8); //-8
+        tick();
+        check_reg(13, 32'hFFFF_FFFC); //-4
     end
     
 endmodule

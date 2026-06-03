@@ -14,11 +14,12 @@ package riscv_pkg;
                             ALU_LUI  = 4'b1010
                             } alu_control_t;
 
-    typedef enum reg [1:0] {
-                            ALUOP_ADD   = 2'b00,
-                            ALUOP_SUB   = 2'b01,
-                            ALUOP_RTYPE = 2'b10,
-                            ALUOP_LUI   = 2'b11
+    typedef enum reg [2:0] {
+                            ALUOP_ADD   = 3'b000,
+                            ALUOP_SUB   = 3'b001,
+                            ALUOP_RTYPE = 3'b010,
+                            ALUOP_ITYPE  = 3'b011,
+                            ALUOP_LUI   = 3'b100
                             } alu_op_t;
     
     typedef enum reg [6:0] {
