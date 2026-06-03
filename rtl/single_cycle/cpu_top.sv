@@ -5,7 +5,9 @@ module cpu_top(input clk,
 
     //Control Unit Signals
     wire branch_ctrl, reg_write, alu_src_b, alu_src_a, mem_read, mem_write;
-    wire [1:0]  jump, alu_op, mem_to_reg;
+    mem_to_reg_t mem_to_reg;
+    alu_op_t     alu_op;
+    jump_t       jump;
     
     //PC Signals
     wire [31:0] pc_out, pc_plus_4;
@@ -21,7 +23,7 @@ module cpu_top(input clk,
     wire [31:0] imm;
 
     //ALU Control Signals
-    wire [3:0]  alu_control;
+    alu_control_t  alu_control;
 
     //ALU Signals
     wire        zero, carry, overflow, negative;
@@ -45,7 +47,7 @@ module cpu_top(input clk,
                       .pc_out      (pc_out));
 
     instruction_memory #(.MEM_FILE("program_test_1.mem")) imem (.program_count (pc_out),
-                                                               .instruction   (instruction));
+                                                                .instruction   (instruction));
 
     register_file reg_file (.clk       (clk),
                             .reset     (reset),

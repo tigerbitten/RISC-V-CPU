@@ -1,15 +1,15 @@
 import riscv_pkg::*;
 
-module control_unit(input [6:0]      opcode,
-                    output reg [1:0] alu_op,
-                    output reg       alu_src_b, //on when second input comes from imm_gen
-                    output reg       alu_src_a, //on when first input is PC
-                    output reg       branch_ctrl,
-                    output reg [1:0] jump,
-                    output reg       mem_read,
-                    output reg       mem_write,
-                    output reg [1:0] mem_to_reg,
-                    output reg       reg_write);
+module control_unit(input  opcode_t     opcode,
+                    output alu_op_t     alu_op,
+                    output reg          alu_src_b, //on when second input comes from imm_gen
+                    output reg          alu_src_a, //on when first input is PC
+                    output reg          branch_ctrl,
+                    output jump_t       jump,
+                    output reg          mem_read,
+                    output reg          mem_write,
+                    output mem_to_reg_t mem_to_reg,
+                    output reg          reg_write);
 
     always_comb begin
         case (opcode)

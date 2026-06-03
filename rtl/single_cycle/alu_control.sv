@@ -1,9 +1,9 @@
 import riscv_pkg::*;
 
-module alu_control(input [1:0]      alu_op,
-                   input [2:0]      funct3,
-                   input            funct7_30,
-                   output reg [3:0] alu_control);
+module alu_control(input alu_op_t       alu_op,
+                   input [2:0]          funct3,
+                   input                funct7_30,
+                   output alu_control_t alu_control);
     
     always_comb begin
         case (alu_op)

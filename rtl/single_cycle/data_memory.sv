@@ -1,12 +1,12 @@
 import riscv_pkg::*;
 
-module data_memory(input             clk,
-                   input             mem_read,
-                   input             mem_write,
-                   input [31:0]      write_data,
-                   input [31:0]      address,
-                   input [2:0]       funct3,
-                   output reg [31:0] read_data);
+module data_memory(input              clk,
+                   input              mem_read,
+                   input              mem_write,
+                   input [31:0]       write_data,
+                   input [31:0]       address,
+                   input mem_funct3_t funct3,
+                   output reg [31:0]  read_data);
     
     reg [7:0] memory [0:1023];
     

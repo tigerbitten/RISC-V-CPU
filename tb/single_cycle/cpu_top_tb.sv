@@ -17,18 +17,17 @@ module cpu_top_tb;
     task tick();
         begin
             @(posedge clk) #1;
-//            $display("PC:%h - %d", dut.pc.pc_out, dut.pc.pc_out);
         end
     endtask
 
     task check_reg(input [4:0] register_num,
                    input [31:0] expected_val);
         begin
-            $display("PC:%h, %d instruction:%h", dut.pc.pc_out, dut.pc.pc_out, dut.imem.instruction);
+            $display("PC:%d instruction:%h", dut.pc.pc_out, dut.imem.instruction);
             if (dut.reg_file.registers[register_num] !== expected_val) begin
                 $display("FAIL: register=%d val=%h expected=%h", register_num, dut.reg_file.registers[register_num], expected_val);
                 $display("alu_op=%b alu_ctrl=%b", dut.ctrl_unit.alu_op, dut.alu_ctrl.alu_control);
-                $display("funct3=%b funct7_30=%b", dut.alu_ctrl.funct3, cpu_top.alu_ctrl.funct7_30);
+                $display("funct3=%b funct7_30=%b", dut.alu_ctrl.funct3, dut.alu_ctrl.funct7_30);
             end
             else
                 $display("PASS: register=%d val=%h", register_num, expected_val);
@@ -49,7 +48,8 @@ module cpu_top_tb;
 
             if (actual !== expected_val) begin
                 $display("FAIL: actual=%h expected=%h width=%s", actual, expected_val, width.name());
-                $display("FAIL: alu_op=%s alu_ctrl=%s", dut.ctrl_unit.alu_op, dut.alu_ctrl.alu_control);
+                $display("alu_op=%s alu_ctrl=%s", dut.ctrl_unit.alu_op, dut.alu_ctrl.alu_control);
+                $display("funct3=%b funct7_30=%b", dut.alu_ctrl.funct3, dut.alu_ctrl.funct7_30);
             end
             else
                 $display("PASS: actual=%h expected=%h width=%s", actual, expected_val, width.name());
@@ -79,7 +79,7 @@ module cpu_top_tb;
         tick();
         check_reg(7, 32'd6);
         tick();
-        check_reg(8, 32'd1); //currently failing
+        check_reg(8, 32'd1);
         tick();
         check_reg(9, 32'd1);
     end

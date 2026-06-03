@@ -1,13 +1,13 @@
 import riscv_pkg::*;
 
-module ALU(input [31:0]      a,
-           input [31:0]      b,
-           input [3:0]       alu_control,
-           output reg [31:0] result,
-           output            zero,
-           output            negative,
-           output reg        overflow,
-           output            carry);
+module ALU(input [31:0]        a,
+           input [31:0]        b,
+           input alu_control_t alu_control,
+           output reg [31:0]   result,
+           output              zero,
+           output              negative,
+           output reg          overflow,
+           output              carry);
 
     wire [32:0] a_actual, b_actual, adder_out;
     wire        sub_op = (alu_control == ALU_SUB || alu_control == ALU_SLT || alu_control == ALU_SLTU);
@@ -19,7 +19,7 @@ module ALU(input [31:0]      a,
     assign a_actual  = {1'b0, a};
     assign b_actual  = sub_op ? {1'b0, (~b)} + 1 : {1'b0, b};
     
-    assign overflow  = sub_op
+    assign overflow  = sub_op 
                        ? ((a[31] != b[31]) && (a[31] != adder_out[31])) //intentionally using sign bits
                        : (a[31] == b[31])  && (a[31] != adder_out[31]); //of a and b, not a_actual, b_actual
 

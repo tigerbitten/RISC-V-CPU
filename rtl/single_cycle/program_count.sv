@@ -1,18 +1,18 @@
 import riscv_pkg::*;
 
-module program_count(input             clk,
-                     input             reset,
-                     input [2:0]       funct3,
-                     input [31:0]      pc_in,
-                     input [1:0]       jump,
-                     input             branch_ctrl,
-                     input             zero,
-                     input             negative,
-                     input             overflow,
-                     input             carry,
-                     input [31:0]      alu_result,
-                     output reg [31:0] pc_plus_4,
-                     output reg [31:0] pc_out);
+module program_count(input                 clk,
+                     input                 reset,
+                     input branch_funct3_t funct3,
+                     input [31:0]          pc_in,
+                     input jump_t          jump,
+                     input                 branch_ctrl,
+                     input                 zero,
+                     input                 negative,
+                     input                 overflow,
+                     input                 carry,
+                     input [31:0]          alu_result,
+                     output reg [31:0]     pc_plus_4,
+                     output reg [31:0]     pc_out);
     
     reg [31:0] next_pc;
 
