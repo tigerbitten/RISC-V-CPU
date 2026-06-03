@@ -17,7 +17,7 @@ module cpu_top_tb;
     task tick();
         begin
             $display("PC:%d instruction:%h", dut.pc.pc_out, dut.imem.instruction);
-            $display("   alu_op=%b alu_ctrl=%b", dut.ctrl_unit.alu_op, dut.alu_ctrl.alu_control);
+            $display("   alu_result=%h alu_op=%b alu_ctrl=%b zero=%b", dut.alu.result, dut.ctrl_unit.alu_op, dut.alu_ctrl.alu_control, dut.zero);
             $display("       funct3=%b funct7_30=%b", dut.alu_ctrl.funct3, dut.alu_ctrl.funct7_30);
             @(posedge clk) #1;
         end
@@ -50,7 +50,7 @@ module cpu_top_tb;
                 $display("FAIL: actual=%h expected=%h width=%s", actual, expected_val, width.name());
             end
             else
-                $display("PASS: actual=%h expected=%h width=%s", actual, expected_val, width.name());
+                $display("PASS: memory[%d]=%h width=%s", addr, actual, width.name());
         end
     endtask
 
@@ -97,6 +97,18 @@ module cpu_top_tb;
         check_mem(32'd0, 32'd100, MEM_WIDTH_WORD);
         tick();
         check_reg(15, 32'd100);
+        //store and load byte section
+        tick();
+        check_reg(16, 32'd65);
+        tick();
+        check_mem(32'd4, 32'd65, MEM_WIDTH_BYTE);
+        tick();
+        check_reg(17, 32'd65);
+        //BEQ taken section
+        tick();
+        check_reg(18, 32'd0);
+        tick(); //brach evaluation
+        tick();
+        check_reg(18, 32'd8); //should be 8
     end
-    
 endmodule

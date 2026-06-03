@@ -3,7 +3,6 @@ import riscv_pkg::*;
 module control_unit(input  opcode_t     opcode,
                     output alu_op_t     alu_op,
                     output reg          alu_src_b, //on when second input comes from imm_gen
-                    output reg          alu_src_a, //on when first input is PC
                     output reg          branch_ctrl,
                     output jump_t       jump,
                     output reg          mem_read,
@@ -16,7 +15,6 @@ module control_unit(input  opcode_t     opcode,
           OP_BRANCH : begin
               alu_op      = ALUOP_SUB;
               alu_src_b   = 1'b0;
-              alu_src_a   = 1'b0;
               branch_ctrl = 1'b1;
               jump        = JUMP_NONE;
               mem_read    = 1'b0;
@@ -27,7 +25,6 @@ module control_unit(input  opcode_t     opcode,
           OP_RTYPE : begin
               alu_op      = ALUOP_RTYPE;
               alu_src_b   = 1'b0;
-              alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
               jump        = JUMP_NONE;
               mem_read    = 1'b0;
@@ -38,7 +35,6 @@ module control_unit(input  opcode_t     opcode,
           OP_ALU_IMM : begin
               alu_op      = ALUOP_ITYPE;
               alu_src_b   = 1'b1;
-              alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
               jump        = JUMP_NONE;
               mem_read    = 1'b0;
@@ -49,7 +45,6 @@ module control_unit(input  opcode_t     opcode,
           OP_LOAD : begin
               alu_op      = ALUOP_ADD;
               alu_src_b   = 1'b1;
-              alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
               jump        = JUMP_NONE;
               mem_read    = 1'b1;
@@ -60,7 +55,6 @@ module control_unit(input  opcode_t     opcode,
           OP_JALR : begin
               alu_op      = ALUOP_ADD;
               alu_src_b   = 1'b1;
-              alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
               jump        = JUMP_JALR;
               mem_read    = 1'b0;
@@ -71,7 +65,6 @@ module control_unit(input  opcode_t     opcode,
           OP_STORE : begin
               alu_op      = ALUOP_ADD;
               alu_src_b   = 1'b1;
-              alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
               jump        = JUMP_NONE;
               mem_read    = 1'b0;
@@ -82,7 +75,6 @@ module control_unit(input  opcode_t     opcode,
           OP_JAL : begin
               alu_op      = ALUOP_ADD;
               alu_src_b   = 1'b1;
-              alu_src_a   = 1'b1;
               branch_ctrl = 1'b0;
               jump        = JUMP_JAL;
               mem_read    = 1'b0;
@@ -93,7 +85,6 @@ module control_unit(input  opcode_t     opcode,
           OP_LUI : begin
               alu_op      = ALUOP_LUI;
               alu_src_b   = 1'b1;
-              alu_src_a   = 1'b0;
               branch_ctrl = 1'b0;
               jump        = JUMP_NONE;
               mem_read    = 1'b0;
@@ -104,7 +95,6 @@ module control_unit(input  opcode_t     opcode,
           OP_AUIPC : begin
               alu_op      = ALUOP_ADD;
               alu_src_b   = 1'b1;
-              alu_src_a   = 1'b1;
               branch_ctrl = 1'b0;
               jump        = JUMP_NONE;
               mem_read    = 1'b0;

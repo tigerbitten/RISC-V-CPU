@@ -4,7 +4,7 @@ module cpu_top(input clk,
                input reset);
 
     //Control Unit Signals
-    wire branch_ctrl, reg_write, alu_src_b, alu_src_a, mem_read, mem_write;
+    wire branch_ctrl, reg_write, alu_src_b, mem_read, mem_write;
     mem_to_reg_t mem_to_reg;
     alu_op_t     alu_op;
     jump_t       jump;
@@ -70,7 +70,6 @@ module cpu_top(input clk,
     control_unit ctrl_unit (.opcode      (instruction[6:0]),
                             .alu_op      (alu_op),
                             .alu_src_b   (alu_src_b),
-                            .alu_src_a   (alu_src_a),
                             .branch_ctrl (branch_ctrl),
                             .jump        (jump),
                             .mem_read    (mem_read),
@@ -78,11 +77,10 @@ module cpu_top(input clk,
                             .mem_to_reg  (mem_to_reg),
                             .reg_write   (reg_write));
 
-    //MUXEs to ALU inputs
-    assign a = (alu_src_a) ? pc_out : rs1_data;
+    //MUX to ALU b input
     assign b = (alu_src_b) ? imm    : rs2_data;
 
-    ALU alu (.a           (a),
+    ALU alu (.a           (rs1_data),
              .b           (b),
              .alu_control (alu_control),
              .result      (alu_result),
