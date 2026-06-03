@@ -43,6 +43,7 @@ module cpu_top(input clk,
                       .overflow    (overflow),
                       .carry       (carry),
                       .alu_result  (alu_result),
+                      .imm         (imm),
                       .pc_plus_4   (pc_plus_4),
                       .pc_out      (pc_out));
 
