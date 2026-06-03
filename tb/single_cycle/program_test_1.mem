@@ -19,8 +19,8 @@ ff800613
 
 //Store and load word
 06400713
-01000223
-00400883
+00e02023
+00002783
 
 //Store and load byte
 04100813

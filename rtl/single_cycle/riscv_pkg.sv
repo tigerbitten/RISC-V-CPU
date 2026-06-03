@@ -18,7 +18,7 @@ package riscv_pkg;
                             ALUOP_ADD   = 3'b000,
                             ALUOP_SUB   = 3'b001,
                             ALUOP_RTYPE = 3'b010,
-                            ALUOP_ITYPE  = 3'b011,
+                            ALUOP_ITYPE = 3'b011,
                             ALUOP_LUI   = 3'b100
                             } alu_op_t;
     
