@@ -1,6 +1,6 @@
 # RISC-V CPU
  
-A RV32I RISC-V processor implementation written in SystemVerilog. Work in progress. Core datapath complete, still working on verification.
+A RV32I RISC-V processor implementation written in SystemVerilog. Work in progress. Core datapath complete, still working on verification of single-cycle implementation.
  
 ## Status
  
@@ -19,6 +19,8 @@ Modules implemented with passing testbenches:
 Each module has a corresponding testbench for simulation-based verification.
 Currently verifying full RV32I instruction set in simulation (cpu_top module and its testbench).
 Not yet synthesized to hardware.
+
+Currently using assembly_program_test_1.txt (the machine code version inputed into instruction memory is program_test_1.mem) to test cpu_top.
 
 ## Architecture
 
