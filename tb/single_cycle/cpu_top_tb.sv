@@ -110,5 +110,16 @@ module cpu_top_tb;
         tick(); //brach evaluation
         tick();
         check_reg(18, 32'd8); //should be 8
+        //BNE taken section
+        tick();
+        check_reg(19, 32'd0);
+        tick();
+        tick();
+        check_reg(19, 32'd9);
+        //JAL section
+        tick();
+        check_reg(20, 32'd112);
+        tick();
+        check_reg(20, 32'd112); //ensure addi instruction was skipped over
     end
 endmodule
