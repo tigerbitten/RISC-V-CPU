@@ -1,7 +1,8 @@
 import riscv_pkg::*;
 
-module cpu_top(input clk,
-               input reset);
+module cpu_top #(parameter MEM_FILE = "instruction_mem_test.mem") 
+    (input clk,
+     input reset);
 
     //Control Unit Signals
     wire branch_ctrl, reg_write, alu_src_b, mem_read, mem_write;
@@ -47,8 +48,8 @@ module cpu_top(input clk,
                       .pc_plus_4   (pc_plus_4),
                       .pc_out      (pc_out));
 
-    instruction_memory #(.MEM_FILE("program_test_1.mem")) imem (.program_count (pc_out),
-                                                                .instruction   (instruction));
+    instruction_memory #(.MEM_FILE(MEM_FILE)) imem (.program_count (pc_out),
+                                                      .instruction   (instruction));
 
     register_file reg_file (.clk       (clk),
                             .reset     (reset),

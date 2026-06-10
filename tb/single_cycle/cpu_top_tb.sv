@@ -1,11 +1,13 @@
 import riscv_pkg::*;
 
 module cpu_top_tb;
-
+    parameter MEM_FILE = "program_test_1.mem";
+    
+    
     reg clk, reset;
     
-    cpu_top dut (.clk   (clk),
-                 .reset (reset));
+    cpu_top #(.MEM_FILE(MEM_FILE)) dut (.clk   (clk),
+                                        .reset (reset));
 
     always begin
         clk = 0;
