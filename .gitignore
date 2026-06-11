@@ -17,3 +17,5 @@ vivado*/
 *.hw/
 *.ip_user_files/
 *.sim/
+tests/run_sim.tcl
+tests/run_tests.py
