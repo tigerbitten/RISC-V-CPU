@@ -16,20 +16,30 @@ def wsl(cmd):
     result = subprocess.run(["wsl"] + cmd, capture_output=True, text=True)
     return result
 
+def to_wsl_path(windows_path): #WSL filepaths look different than powershell (vivado is only in powershell)
+    path = windows_path.replace("\\", "/")
+    if path[1] == ":":
+        path = "/mnt/" + path[0].lower() + path[2:]
+    return path
+
 def assemble(src_file, elf_file):
+    wsl_elf_file = to_wsl_path(elf_file)
+    wsl_src_file = to_wsl_path(src_file)
     return wsl([
         "riscv64-unknown-elf-gcc",
         "-march=rv32i_zicsr", "-mabi=ilp32",
         "-nostdlib", "-nostartfiles",
         "-Ttext=0x0",
-        src_file, "-o", elf_file
+        wsl_src_file, "-o", wsl_elf_file
     ])
 
 def extract_binary(elf_file, bin_file):
+    wsl_elf_file = to_wsl_path(elf_file)
+    wsl_bin_file = to_wsl_path(bin_file)
     return wsl([
         "riscv64-unknown-elf-objcopy",
         "-O", "binary",
-        elf_file, bin_file
+        wsl_elf_file, wsl_bin_file
     ])
 
 def convert_to_mem(bin_file, mem_file):
@@ -69,8 +79,8 @@ def parse_result():
     with open(SIM_LOG, "r") as f:
         lines = f.readlines()
     for line in lines:
-        if "PASS:" in line: #must display the word PASS or FAIL for each specific test
-            return True     #or else parse_result won't count it
+        if "PASS:" in line:
+            return True
         if "FAIL:" in line:
             return False
     return None

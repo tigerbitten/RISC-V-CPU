@@ -19,3 +19,5 @@ vivado*/
 *.sim/
 tests/run_sim.tcl
 tests/run_tests.py
+*.bin
+*.elf
