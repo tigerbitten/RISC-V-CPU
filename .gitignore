@@ -17,4 +17,3 @@ vivado*/
 *.hw/
 *.ip_user_files/
 *.sim/
-tests/
