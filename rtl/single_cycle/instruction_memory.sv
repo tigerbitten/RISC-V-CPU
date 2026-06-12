@@ -1,4 +1,4 @@
-module instruction_memory #(parameter MEM_FILE = "instruction_mem_test.mem")
+module instruction_memory #(parameter MEM_FILE = "current_test.mem")
     (input [31:0]  program_count,
      output [31:0] instruction);
     

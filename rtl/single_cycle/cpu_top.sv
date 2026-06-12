@@ -1,6 +1,6 @@
 import riscv_pkg::*;
 
-module cpu_top #(parameter MEM_FILE = "instruction_mem_test.mem") 
+module cpu_top #(parameter MEM_FILE = "current_test.mem") 
     (input clk,
      input reset);
 

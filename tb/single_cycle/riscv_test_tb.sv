@@ -1,7 +1,7 @@
 module riscv_test_tb;
        
-    parameter MEM_FILE = ""; // is overwritten by tcl script generated in run_tests.py
-    parameter CYCLES = 600;
+    parameter MEM_FILE = "test_jalr.mem"; //test selection
+    parameter CYCLES = 300;
     
     integer   pass_count = 0;
     integer   fail_count = 0;

@@ -1,7 +1,7 @@
 import riscv_pkg::*;
 
 module cpu_top_tb;
-    parameter MEM_FILE = "program_test_1.mem";
+    parameter MEM_FILE = "current_test.mem";
     
     
     reg clk, reset;
