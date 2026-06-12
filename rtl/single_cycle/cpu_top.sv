@@ -11,7 +11,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     jump_t       jump;
     
     //PC Signals
-    wire [31:0] pc_out, pc_plus_4;
+    wire [31:0] pc_out, pc_plus_4, pc_plus_imm;
 
     //Instruction Memory Signals
     wire [31:0] instruction;
@@ -46,6 +46,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
                       .alu_result  (alu_result),
                       .imm         (imm),
                       .pc_plus_4   (pc_plus_4),
+                      .pc_plus_imm (pc_plus_imm),
                       .pc_out      (pc_out));
 
     instruction_memory #(.MEM_FILE(MEM_FILE)) imem (.program_count (pc_out),
@@ -102,9 +103,10 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     //Writeback MUX
     always_comb begin
         case(mem_to_reg)
-          MEM_TO_REG_ALU : rd_data = alu_result;
-          MEM_TO_REG_MEM : rd_data = read_data;
-          MEM_TO_REG_PC4 : rd_data = pc_plus_4;
+          MEM_TO_REG_ALU   : rd_data = alu_result;
+          MEM_TO_REG_MEM   : rd_data = read_data;
+          MEM_TO_REG_PC4   : rd_data = pc_plus_4;
+          MEM_TO_REG_AUIPC : rd_data = pc_plus_imm;
         endcase
     end
 endmodule

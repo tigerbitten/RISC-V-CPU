@@ -13,10 +13,13 @@ module program_count(input                 clk,
                      input [31:0]          alu_result,
                      input [31:0]          imm,
                      output reg [31:0]     pc_plus_4,
+                     output reg [31:0]     pc_plus_imm,
                      output reg [31:0]     pc_out);
     
     reg [31:0] next_pc;
     wire [31:0] adder_out = pc_in + imm;
+    
+    assign pc_plus_imm    = adder_out;
     
     always_ff @(posedge clk) begin
         if (reset)

@@ -52,9 +52,10 @@ package riscv_pkg;
                             } branch_funct3_t;
     
     typedef enum reg [1:0] {
-                            MEM_TO_REG_ALU = 2'b00, //write register file from ALU output
-                            MEM_TO_REG_MEM = 2'b01, //write register file from memory
-                            MEM_TO_REG_PC4 = 2'b10  //write PC + 4 into register file
+                            MEM_TO_REG_ALU   = 2'b00, //write register file from ALU output
+                            MEM_TO_REG_MEM   = 2'b01, //write register file from memory
+                            MEM_TO_REG_PC4   = 2'b10, //write PC + 4 into register file
+                            MEM_TO_REG_AUIPC = 2'b11  //write imm + pc_in from program_count into register_file
                             } mem_to_reg_t;
     
     typedef enum reg [1:0] {
