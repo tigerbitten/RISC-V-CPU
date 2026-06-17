@@ -1,11 +1,15 @@
 module board_top(input        clk,
                  input [3:0]  btn,
+                 input [15:0] sw,
                  output [7:0] D0_SEG,
                  output [3:0] D0_AN,
                  output [7:0] D1_SEG,
                  output [3:0] D1_AN);
     
-    parameter MEM_FILE = "program_test_1.mem";
+    parameter MEM_FILE = "test_jalr.mem";
+    wire      reset;
+
+    assign reset = sw[0];
     
     cpu_top #(.MEM_FILE(MEM_FILE)) dut (.clk   (debounced_btns[0]), //btn 0 is cpu clock
                                         .reset (reset));
@@ -19,12 +23,12 @@ module board_top(input        clk,
                                                      .clk_div (khz_clk));
     //Display PC to 7 seg displays
     hex_display_4 display_right (.khz_clk         (khz_clk),
-                                 .switches        (pc_display[15:0]),
+                                 .switches        (pc_display[31:16]),
                                  .active_segments (D0_SEG),
                                  .active_digit    (D0_AN));
 
     hex_display_4 display_left (.khz_clk         (khz_clk),
-                                 .switches        (pc_display[31:16]),
+                                 .switches        (pc_display[15:0]),
                                  .active_segments (D1_SEG),
                                  .active_digit    (D1_AN));
 

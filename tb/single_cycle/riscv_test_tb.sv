@@ -1,6 +1,6 @@
 module riscv_test_tb;
        
-    parameter MEM_FILE = "test_claude_comprehensive_1.mem"; //test selection
+    parameter MEM_FILE = "test_jalr.mem"; //test selection
     parameter CYCLES = 300;
     
     integer   pass_count = 0;
