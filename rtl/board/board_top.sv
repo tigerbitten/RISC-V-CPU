@@ -4,9 +4,11 @@ module board_top(input        clk,
                  output [7:0] D0_SEG,
                  output [3:0] D0_AN,
                  output [7:0] D1_SEG,
-                 output [3:0] D1_AN);
+                 output [3:0] D1_AN,
+                 output [2:0] RGB0,
+                 output [2:0] RGB1);
     
-    parameter MEM_FILE = "test_jalr.mem";
+    parameter MEM_FILE = "test_rgb.mem";
     wire      reset;
 
     assign reset = sw[0];
