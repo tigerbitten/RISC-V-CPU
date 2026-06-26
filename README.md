@@ -1,39 +1,56 @@
 # RISC-V CPU
- 
-A RV32I RISC-V processor implementation written in SystemVerilog. Work in progress.
- 
+
+A RV32I RISC-V processor implementation written in SystemVerilog.
+
 ## Status
 
-Single-Cycle implementation complete, currently verifying in simulation.
-Modules implemented with passing testbenches:
- 
-- ALU
-- ALU Controller
-- Register File
-- Immediate Generator
-- Instruction Memory
-- Data Memory
-- Control Unit
-- Program Count
-- CPU Top
-  
-Each module has a corresponding testbench for simulation-based verification.
-
-CPU level tests are written as RV32I assembly '.S' files that are then assembled with the riscv-gnu-toolchain, turned into .mem files (via s_to_mem.py), and loaded into instruction memory using $readmemh. Each test program writes 1 to register x3 on pass or a nonzero error code on fail.
-
-Currently verifying full RV32I instruction set in simulation with assembly programs (found in tests/mem). All .mem files (derived from the .S files in tests/src) currently pass.
-
-Used Claude Sonnet 4.6 to generate assembly programs (.S files) to test with.
-
-Not yet synthesized to hardware.
+Single-cycle implementation complete and verified in simulation. Successfully synthesized to a Boolean board FPGA with working board peripherals. Currently beginning pipelined implementation.
 
 ## Architecture
 
+### Single-Cycle (Complete)
+
 ![Datapath Diagram](docs/cpu_box_diagram.png)
 
-Link to more interactive
-[Miro Board](https://miro.com/app/board/uXjVHM7kwYA=/?share_link_id=328386992955)
- 
-## Planned
+Link to more interactive [Miro Board](https://miro.com/app/board/uXjVHM7kwYA=/?share_link_id=328386992955)
 
-Full pipeline integration (fetch, decode, execute, memory, writeback). First goal is a complete single-cycle implementation.
+**Core modules** (`rtl/single_cycle/`):
+
+- `cpu_top.sv` — top-level integration of all core modules
+- `ALU.sv` — arithmetic and logic operations
+- `alu_control.sv` — generates ALU operation select from instruction fields
+- `control_unit.sv` — decodes opcodes and generates datapath control signals
+- `register_file.sv` — 32 x 32-bit register file
+- `imm_gen.sv` — immediate value generation and sign-extension for all RV32I formats
+- `instruction_memory.sv` — ROM loaded from `.mem` file via `$readmemh`
+- `data_memory.sv` — byte-addressable RAM for load/store instructions
+- `program_count.sv` — PC register with branch/jump support
+- `riscv_pkg.sv` — shared constants and type definitions
+
+**Board peripherals** (`rtl/board/`):
+
+- `board_top.sv` — top-level for FPGA synthesis; connects CPU to board I/O
+- `clock_div.sv` — divides 100 MHz board clock to other frequencies
+- `detect_and_debounce.sv` — button debouncer for manual clock stepping
+- `hex_display_4.sv` — drives 4-digit 7-segment display
+- `hex_encode.sv` — encodes a 4-bit nibble to 7-segment segments
+- `rgb_pwm.sv` — PWM controller for the onboard RGB LED
+
+## Testing
+
+CPU-level tests are written as RV32I assembly `.S` files, assembled with the riscv-gnu-toolchain, converted to `.mem` files via `s_to_mem.py`, and loaded into instruction memory. Each test writes `1` to `x3` on pass or a nonzero error code on fail. Test programs were generated with Claude Sonnet 4.6.
+
+All RV32I instructions are covered across the test suite (`tests/src/`):
+
+- `test_alu.S` — arithmetic and logic instructions
+- `test_branches.S` — branch instructions
+- `test_loads_stores.S` — load and store instructions
+- `test_jalr.S` — jump instructions (`JAL`, `JALR`)
+- `test_claude_comprehensive_1.S` — broad integration test
+- `test_rgb.S` — RGB peripheral demo program
+
+Each core module also has a standalone testbench (`tb/single_cycle/`).
+
+## Pipeline (In Progress)
+
+Full 5-stage pipeline: Fetch, Decode, Execute, Memory, Writeback.
