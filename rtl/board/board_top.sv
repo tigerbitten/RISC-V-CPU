@@ -5,8 +5,7 @@ module board_top(input        clk,
                  output [3:0] D0_AN,
                  output [7:0] D1_SEG,
                  output [3:0] D1_AN,
-                 output [2:0] RGB0,
-                 output [2:0] RGB1);
+                 output [2:0] RGB0);
     
     parameter MEM_FILE = "test_rgb.mem";
     wire      reset;
@@ -16,20 +15,29 @@ module board_top(input        clk,
     cpu_top #(.MEM_FILE(MEM_FILE)) dut (.clk   (debounced_btns[0]), //btn 0 is cpu clock
                                         .reset (reset));
     
-    wire[31:0] pc_display = dut.pc.pc_out;
+    wire [31:0] pc_display = dut.pc.pc_out;
+    wire [23:0] full_rgb   = dut.reg_file.registers[7][23:0];
     
-    //Create khz clk for 7 seg display
+    //Create khz clk for 7 seg display and RGB PWM
     wire khz_clk;
     
     clock_div #(.TERMINAL_COUNT(50_000)) clk_div_u0 (.clk     (clk),
                                                      .clk_div (khz_clk));
+
+    //PWM
+    rgb_pwm pwm_u0 (.khz_clk  (khz_clk),
+                    .full_rgb (full_rgb),
+                    .red      (RGB0[0]),
+                    .green    (RGB0[1]),
+                    .blue     (RGB0[2]));
+        
     //Display PC to 7 seg displays
     hex_display_4 display_right (.khz_clk         (khz_clk),
                                  .switches        (pc_display[31:16]),
                                  .active_segments (D0_SEG),
                                  .active_digit    (D0_AN));
 
-    hex_display_4 display_left (.khz_clk         (khz_clk),
+    hex_display_4 display_left (.khz_clk          (khz_clk),
                                  .switches        (pc_display[15:0]),
                                  .active_segments (D1_SEG),
                                  .active_digit    (D1_AN));
@@ -38,9 +46,9 @@ module board_top(input        clk,
     wire [3:0] sanitized_btns, debounced_btns;
     
     sync_n #(.WIDTH(4)) sync
-        (.clk(clk),
-         .in(btn),
-         .out(sanitized_btns));
+        (.clk (clk),
+         .in  (btn),
+         .out (sanitized_btns));
     
     generate //generate 4 debouncers, 1 for each button
         for (genvar ii = 0; ii < 4; ii++) begin : gen_detect_and_debounce

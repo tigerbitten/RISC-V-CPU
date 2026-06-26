@@ -1,7 +1,7 @@
 # test_rgb.S — cycles register x7 through RGB colors
 # x7 holds a 24-bit RGB value: bits [23:16] = R, [15:8] = G, [7:0] = B
-# takes 2 cycles to change color in the single cycle implementation
-# because LI gets expanded to 2 instructions.
+# takes 2 cycles to change color FOR SOME COLORS in the single cycle implementation
+# because LI gets expanded to 2 instructions FOR SOME COLORS (colors that require >12 bits).
         
 .global _start
 _start:
