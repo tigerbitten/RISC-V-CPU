@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python s_to_mem.py simple_add.S)"
+      "Bash(python s_to_mem.py simple_add.S)",
+      "Bash(python s_to_mem.py hazard_test.S)"
     ]
   }
 }
