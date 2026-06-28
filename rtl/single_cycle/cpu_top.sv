@@ -50,7 +50,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
                       .pc_out      (pc_out));
 
     instruction_memory #(.MEM_FILE(MEM_FILE)) imem (.program_count (pc_out),
-                                                      .instruction   (instruction));
+                                                    .instruction   (instruction));
 
     register_file reg_file (.clk       (clk),
                             .reset     (reset),
