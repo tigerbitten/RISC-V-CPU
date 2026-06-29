@@ -9,6 +9,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
 
     program_count pc (.clk         (clk),
                       .reset       (reset),
+                      .stall       (stall),
                       .next_pc     (next_pc),
                       .pc_plus_4   (pc_plus_4),
                       .pc_out      (pc_out));
@@ -24,6 +25,8 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
             id_pc_plus_4   <= 32'b0;
             id_pc_out      <= 32'b0;
             id_instruction <= 32'b0;
+        end else if (stall) begin
+            //hold current vals -- do nothing;
         end else begin
             id_pc_plus_4   <= pc_plus_4;
             id_pc_out      <= pc_out;
@@ -32,12 +35,22 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     end
 
     //ID Stage
-    wire branch_ctrl, reg_write, alu_src_b, mem_read, mem_write;
+    wire branch_ctrl, reg_write, alu_src_b, mem_read, mem_write, stall;
     wire [31:0] rs1_data, rs2_data, imm;
+    wire [4:0]  id_rs1_addr, id_rs2_addr;
     mem_to_reg_t mem_to_reg;
     alu_op_t     alu_op;
     jump_t       jump;
 
+    assign id_rs1_addr = id_instruction[19:15];
+    assign id_rs2_addr = id_instruction[24:20];
+
+    hazard_unit hazard_u (.ex_mem_read (ex_mem_read),
+                          .ex_rd_addr  (ex_rd_addr),
+                          .id_rs1_addr (id_rs1_addr),
+                          .id_rs2_addr (id_rs2_addr),
+                          .stall       (stall));
+    
     control_unit ctrl_unit (.opcode      (id_instruction[6:0]),
                             .alu_op      (alu_op),
                             .alu_src_b   (alu_src_b),
@@ -51,8 +64,8 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     register_file reg_file (.clk       (clk),
                             .reset     (reset),
                             .reg_write (wb_reg_write),
-                            .rs1_addr  (id_instruction[19:15]),
-                            .rs2_addr  (id_instruction[24:20]),
+                            .rs1_addr  (id_rs1_addr),
+                            .rs2_addr  (id_rs2_addr),
                             .rd_addr   (wb_rd_addr),
                             .rd_data   (wb_rd_data),
                             .rs1_data  (rs1_data),
@@ -70,9 +83,10 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     mem_to_reg_t ex_mem_to_reg;
     alu_op_t     ex_alu_op;
     jump_t       ex_jump;
+    wire         flush = stall;
 
     always_ff @(posedge clk) begin
-        if (reset) begin
+        if (reset || flush) begin
             ex_branch_ctrl <= 1'b0;
             ex_alu_src_b   <= 1'b0;
             ex_mem_read    <= 1'b0;
@@ -100,8 +114,8 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
             ex_funct7_30   <= id_instruction[30];
             ex_funct3      <= id_instruction[14:12];
             ex_rd_addr     <= id_instruction[11:7];
-            ex_rs1_addr    <= id_instruction[19:15];
-            ex_rs2_addr    <= id_instruction[24:20];
+            ex_rs1_addr    <= id_rs1_addr;
+            ex_rs2_addr    <= id_rs2_addr;
             ex_rs1_data    <= rs1_data;
             ex_rs2_data    <= rs2_data;
             ex_imm         <= imm;
