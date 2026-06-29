@@ -1,7 +1,7 @@
 module riscv_test_tb;
        
-    parameter MEM_FILE = "nop_padded_test.mem"; //test selection
-    parameter CYCLES = 106;
+    parameter MEM_FILE = "hazard_test.mem"; //test selection
+    parameter CYCLES = 14;
     
     integer   pass_count = 0;
     integer   fail_count = 0;

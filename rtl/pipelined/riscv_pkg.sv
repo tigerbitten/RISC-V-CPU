@@ -70,4 +70,10 @@ package riscv_pkg;
                             MEM_WIDTH_WORD     = 2'b10
                             } mem_width_t; //for cpu_top tb
     
+    typedef enum reg [1:0] {
+                            FWD_NONE = 2'b00,
+                            FWD_MEM  = 2'b01,
+                            FWD_WB   = 2'b10
+                            } forward_select_t;
+    
 endpackage

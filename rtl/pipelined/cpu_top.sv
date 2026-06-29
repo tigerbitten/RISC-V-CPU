@@ -66,7 +66,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     reg ex_branch_ctrl, ex_alu_src_b, ex_mem_read, ex_mem_write, ex_reg_write, ex_funct7_30;
     reg [31:0] ex_rs1_data, ex_rs2_data, ex_imm, ex_pc_plus_4, ex_pc_out;
     reg [2:0]  ex_funct3;
-    reg [4:0]  ex_rd_addr;
+    reg [4:0]  ex_rd_addr, ex_rs1_addr, ex_rs2_addr;
     mem_to_reg_t ex_mem_to_reg;
     alu_op_t     ex_alu_op;
     jump_t       ex_jump;
@@ -81,6 +81,8 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
             ex_funct7_30   <= 1'b0;
             ex_funct3      <= 3'b0;
             ex_rd_addr     <= 5'b0;
+            ex_rs1_addr    <= 5'b0;
+            ex_rs2_addr    <= 5'b0;
             ex_rs1_data    <= 32'b0;
             ex_rs2_data    <= 32'b0;
             ex_imm         <= 32'b0;
@@ -98,6 +100,8 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
             ex_funct7_30   <= id_instruction[30];
             ex_funct3      <= id_instruction[14:12];
             ex_rd_addr     <= id_instruction[11:7];
+            ex_rs1_addr    <= id_instruction[19:15];
+            ex_rs2_addr    <= id_instruction[24:20];
             ex_rs1_data    <= rs1_data;
             ex_rs2_data    <= rs2_data;
             ex_imm         <= imm;
@@ -112,18 +116,45 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     //EX Stage
     wire        zero, carry, overflow, negative;
     wire [31:0] alu_b, alu_result, pc_plus_imm, next_pc;
+    reg [31:0]  a_forwarded, b_forwarded;
+    forward_select_t forward_a_select, forward_b_select;
     alu_control_t  alu_control;
 
+    forwarding_unit fwrd_u (.ex_rs1_addr      (ex_rs1_addr),
+                            .ex_rs2_addr      (ex_rs2_addr),
+                            .mem_rd_addr      (mem_rd_addr),
+                            .mem_reg_write    (mem_reg_write),
+                            .wb_rd_addr       (wb_rd_addr),
+                            .wb_reg_write     (wb_reg_write),
+                            .forward_a_select (forward_a_select),
+                            .forward_b_select (forward_b_select));
+    
     alu_control alu_ctrl (.alu_op      (ex_alu_op),
                           .funct3      (ex_funct3),
                           .funct7_30   (ex_funct7_30),
                           .alu_control (alu_control));
-
     
-    //MUX to ALU b input
-    assign alu_b = (ex_alu_src_b) ? ex_imm : ex_rs2_data;
+    //Forwarding MUXES
+    always_comb begin
+        case (forward_a_select)
+          FWD_MEM  : a_forwarded = mem_alu_result;
+          FWD_WB   : a_forwarded = wb_rd_data;
+          FWD_NONE : a_forwarded = ex_rs1_data;
+        endcase
+    end
 
-    ALU alu (.a           (ex_rs1_data),
+    always_comb begin
+        case (forward_b_select)
+          FWD_MEM  : b_forwarded = mem_alu_result;
+          FWD_WB   : b_forwarded = wb_rd_data;
+          FWD_NONE : b_forwarded = ex_rs2_data;
+        endcase
+    end
+
+    //second MUX to ALU b input
+    assign alu_b = (ex_alu_src_b) ? ex_imm : b_forwarded;
+
+    ALU alu (.a           (a_forwarded),
              .b           (alu_b),
              .alu_control (alu_control),
              .result      (alu_result),
