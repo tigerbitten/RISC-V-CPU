@@ -10,8 +10,8 @@ module register_file(input         clk,
     
     reg [31:0] registers [0:31];
     
-    assign rs1_data = registers[rs1_addr];
-    assign rs2_data = registers[rs2_addr];
+    assign rs1_data = (reg_write && rd_addr == rs1_addr && rs1_addr != 0) ? rd_data : registers[rs1_addr];
+    assign rs2_data = (reg_write && rd_addr == rs2_addr && rs2_addr != 0) ? rd_data : registers[rs2_addr];
     
     always_ff @(posedge clk) begin
         if (reset) begin

@@ -130,7 +130,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     //EX Stage
     wire        zero, carry, overflow, negative, redirect;
     wire [31:0] alu_b, alu_result, pc_plus_imm, next_pc;
-    reg [31:0]  a_forwarded, b_forwarded;
+    reg [31:0]  a_forwarded, b_forwarded, mem_forward_data;
     forward_select_t forward_a_select, forward_b_select;
     alu_control_t  alu_control;
 
@@ -151,7 +151,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     //Forwarding MUXES
     always_comb begin
         case (forward_a_select)
-          FWD_MEM  : a_forwarded = mem_alu_result;
+          FWD_MEM  : a_forwarded = mem_forward_data;
           FWD_WB   : a_forwarded = wb_rd_data;
           FWD_NONE : a_forwarded = ex_rs1_data;
         endcase
@@ -159,7 +159,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
 
     always_comb begin
         case (forward_b_select)
-          FWD_MEM  : b_forwarded = mem_alu_result;
+          FWD_MEM  : b_forwarded = mem_forward_data;
           FWD_WB   : b_forwarded = wb_rd_data;
           FWD_NONE : b_forwarded = ex_rs2_data;
         endcase
@@ -235,7 +235,17 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
                           .address    (mem_alu_result),
                           .funct3     (mem_funct3),
                           .read_data  (read_data));
-
+    
+    //MEM stage forward data (mirros WB mux, used for forwarding)
+    always_comb begin
+        case (mem_mem_to_reg)
+          MEM_TO_REG_ALU   : mem_forward_data = mem_alu_result;
+          MEM_TO_REG_MEM   : mem_forward_data = read_data;
+          MEM_TO_REG_PC4   : mem_forward_data = mem_pc_plus_4;
+          MEM_TO_REG_AUIPC : mem_forward_data = mem_pc_plus_imm;
+        endcase
+    end
+    
     //MEM / WB Register
     reg [31:0] wb_read_data, wb_alu_result, wb_pc_plus_4, wb_pc_plus_imm;
     reg [4:0]  wb_rd_addr;
