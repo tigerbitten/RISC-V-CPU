@@ -1,7 +1,7 @@
 module riscv_test_tb;
        
-    parameter MEM_FILE = "load_use_hazard_test.mem"; //test selection
-    parameter CYCLES = 35;
+    parameter MEM_FILE = "branch_jump_test.mem"; //test selection
+    parameter CYCLES = 25;
     
     integer   pass_count = 0;
     integer   fail_count = 0;

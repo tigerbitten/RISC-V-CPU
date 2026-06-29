@@ -11,10 +11,10 @@ module next_pc_unit(input branch_funct3_t funct3,
                     input [31:0]          imm,
                     input [31:0]          pc_plus_4,
                     input [31:0]          pc_out,
+                    output reg            redirect,
                     output reg [31:0]     pc_plus_imm,
                     output reg [31:0]     next_pc);
     
-    reg [31:0] next_pc;
     wire [31:0] adder_out = pc_out + imm;
     
     always_comb begin
@@ -34,6 +34,8 @@ module next_pc_unit(input branch_funct3_t funct3,
               FUNCT3_BLTU : if (carry)                  next_pc = adder_out;
               FUNCT3_BGEU : if (!carry)                 next_pc = adder_out;
             endcase
+
         end
+        redirect = (next_pc != pc_plus_4); //evaluated AFTER next_pc is computed
     end
 endmodule

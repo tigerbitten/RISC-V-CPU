@@ -10,6 +10,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     program_count pc (.clk         (clk),
                       .reset       (reset),
                       .stall       (stall),
+                      .redirect    (redirect),
                       .next_pc     (next_pc),
                       .pc_plus_4   (pc_plus_4),
                       .pc_out      (pc_out));
@@ -21,7 +22,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     reg [31:0] id_pc_plus_4, id_pc_out, id_instruction;
 
     always_ff @(posedge clk) begin
-        if (reset) begin
+        if (reset || redirect) begin
             id_pc_plus_4   <= 32'b0;
             id_pc_out      <= 32'b0;
             id_instruction <= 32'b0;
@@ -83,10 +84,9 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     mem_to_reg_t ex_mem_to_reg;
     alu_op_t     ex_alu_op;
     jump_t       ex_jump;
-    wire         flush = stall;
 
     always_ff @(posedge clk) begin
-        if (reset || flush) begin
+        if (reset || redirect || stall) begin
             ex_branch_ctrl <= 1'b0;
             ex_alu_src_b   <= 1'b0;
             ex_mem_read    <= 1'b0;
@@ -128,7 +128,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     end
 
     //EX Stage
-    wire        zero, carry, overflow, negative;
+    wire        zero, carry, overflow, negative, redirect;
     wire [31:0] alu_b, alu_result, pc_plus_imm, next_pc;
     reg [31:0]  a_forwarded, b_forwarded;
     forward_select_t forward_a_select, forward_b_select;
@@ -186,8 +186,9 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
                             .carry       (carry),
                             .alu_result  (alu_result),
                             .imm         (ex_imm),
-                            .pc_plus_4   (ex_pc_plus_4),
+                            .pc_plus_4   (pc_plus_4),
                             .pc_out      (ex_pc_out),
+                            .redirect    (redirect),
                             .pc_plus_imm (pc_plus_imm),
                             .next_pc     (next_pc));
 
@@ -220,7 +221,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
             mem_alu_result  <= alu_result;
             mem_pc_plus_imm <= pc_plus_imm;
             mem_pc_plus_4   <= ex_pc_plus_4;
-            mem_rs2_data    <= ex_rs2_data;
+            mem_rs2_data    <= b_forwarded;
         end
     end
 
