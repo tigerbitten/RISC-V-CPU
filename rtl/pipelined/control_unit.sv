@@ -102,6 +102,16 @@ module control_unit(input  opcode_t     opcode,
               mem_to_reg  = MEM_TO_REG_AUIPC;
               reg_write   = 1'b1;
           end
+          default: begin
+              alu_op      = ALUOP_ADD;
+              alu_src_b   = 1'b0;
+              branch_ctrl = 1'b0;
+              jump        = JUMP_NONE;
+              mem_read    = 1'b0;
+              mem_write   = 1'b0;
+              mem_to_reg  = MEM_TO_REG_ALU;
+              reg_write   = 1'b0;
+          end
         endcase
     end
 endmodule

@@ -31,8 +31,8 @@ module next_pc_unit(input branch_funct3_t funct3,
               FUNCT3_BNE  : if (!zero)                  next_pc = adder_out;
               FUNCT3_BLT  : if (negative ^ overflow)    next_pc = adder_out;
               FUNCT3_BGE  : if (!(negative ^ overflow)) next_pc = adder_out;
-              FUNCT3_BLTU : if (carry)                  next_pc = adder_out;
-              FUNCT3_BGEU : if (!carry)                 next_pc = adder_out;
+              FUNCT3_BLTU : if (!carry)                 next_pc = adder_out; //a < b unsigned
+              FUNCT3_BGEU : if (carry)                  next_pc = adder_out; //a >= b unsigned
             endcase
 
         end
