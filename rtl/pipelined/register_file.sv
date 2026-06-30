@@ -9,7 +9,8 @@ module register_file(input         clk,
                      output [31:0] rs2_data);
     
     reg [31:0] registers [0:31];
-    
+
+    //register file write through: if we're writing to the address we're reading from, we must bypass
     assign rs1_data = (reg_write && rd_addr == rs1_addr && rs1_addr != 0) ? rd_data : registers[rs1_addr];
     assign rs2_data = (reg_write && rd_addr == rs2_addr && rs2_addr != 0) ? rd_data : registers[rs2_addr];
     
