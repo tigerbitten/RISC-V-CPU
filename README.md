@@ -4,7 +4,7 @@ A RV32I RISC-V processor implementation written in SystemVerilog.
 
 ## Status
 
-Single-cycle implementation complete and verified in simulation. Successfully synthesized to a Boolean board FPGA with working board peripherals. Pipelined implementation complete and verified in simulation against the full test suite. Currently implementing gshare dynamic branch prediction.
+Single-cycle implementation complete and verified in simulation. Successfully synthesized to a Boolean board FPGA with working board peripherals. Pipelined implementation complete and verified in simulation against the full test suite, including gshare dynamic branch prediction.
 
 ## Architecture
 
@@ -55,7 +55,7 @@ Each core module also has a standalone testbench (`tb/single_cycle/`).
 
 Full 5-stage pipeline: Fetch, Decode, Execute, Memory, Writeback.
 
-Link to [Miro Board](https://miro.com/app/board/uXjVHBKY5Pg=/?share_link_id=295366368027)
+Link to [Miro Board](https://miro.com/app/board/uXjVHBKY5Pg=/?share_link_id=295366368027) with full datapath diagrams and detailed feature explanations.
 
 **Core modules** (`rtl/pipelined/`):
 
@@ -64,6 +64,7 @@ Link to [Miro Board](https://miro.com/app/board/uXjVHBKY5Pg=/?share_link_id=2953
 - `next_pc_unit.sv` — combinational; computes branch/jump targets and asserts `redirect`
 - `forwarding_unit.sv` — detects EX/MEM and MEM/WB data hazards; selects forwarding path
 - `hazard_unit.sv` — detects load-use hazards; asserts `stall`
+- `branch_predictor.sv` — gshare dynamic predictor; predicts branch direction in ID, resolves and trains in EX
 - `control_unit.sv` — decodes opcodes and generates datapath control signals
 - `register_file.sv` — 32 x 32-bit register file with write-through bypass
 - `ALU.sv`, `alu_control.sv`, `imm_gen.sv`, `instruction_memory.sv`, `data_memory.sv` — shared with single-cycle
@@ -72,4 +73,10 @@ Link to [Miro Board](https://miro.com/app/board/uXjVHBKY5Pg=/?share_link_id=2953
 
 - Data hazards: EX/MEM→EX and MEM/WB→EX forwarding; register file write-through for 3-instruction gap
 - Load-use hazards: 1-cycle stall inserted by hazard unit
-- Control hazards: branch and jump resolved in EX with 2-cycle flush; gshare dynamic prediction in progress
+- Control hazards: branch and jump resolved in EX with 2-cycle flush on misprediction
+
+**Branch prediction:**
+
+Gshare dynamic prediction predicts branch direction in the ID stage using a 256-entry pattern history table of 2-bit saturating counters, indexed by the bottom 8 bits of thebranch PC XORed with an 8-bit global history register. Predictions are checked in EX, where the PHT and GHR are also updated. On a correct prediction, a taken branch costs no flush; only mispredictions pay the 2-cycle penalty. Prediction is gated by the `BRANCH_PRED` parameter in `cpu_top.sv` and `riscv_test_tb.sv` (enabled by default), so it can be toggled off for comparison.
+
+`test_branch_prediction.S` demonstrates the benefit: a loop completes in fewer cycles with `BRANCH_PRED` enabled than with it disabled.
