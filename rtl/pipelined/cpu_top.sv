@@ -7,13 +7,15 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     //IF Stage
     wire [31:0] pc_plus_4, pc_out, instruction;
 
-    program_count pc (.clk         (clk),
-                      .reset       (reset),
-                      .stall       (stall),
-                      .redirect    (redirect),
-                      .next_pc     (next_pc),
-                      .pc_plus_4   (pc_plus_4),
-                      .pc_out      (pc_out));
+    program_count pc (.clk                (clk),
+                      .reset              (reset),
+                      .stall              (stall),
+                      .redirect           (redirect),
+                      .predicted_redirect (predicted_redirect),
+                      .predicted_next_pc  (predicted_next_pc),
+                      .next_pc            (next_pc),
+                      .pc_plus_4          (pc_plus_4),
+                      .pc_out             (pc_out));
     
     instruction_memory #(.MEM_FILE(MEM_FILE)) imem (.program_count (pc_out),
                                                     .instruction   (instruction));
@@ -22,7 +24,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     reg [31:0] id_pc_plus_4, id_pc_out, id_instruction;
 
     always_ff @(posedge clk) begin
-        if (reset || redirect) begin
+        if (reset || redirect || predicted_redirect) begin
             id_pc_plus_4   <= 32'b0;
             id_pc_out      <= 32'b0;
             id_instruction <= 32'b0;
@@ -36,15 +38,28 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     end
 
     //ID Stage
-    wire branch_ctrl, reg_write, alu_src_b, mem_read, mem_write, stall;
-    wire [31:0] rs1_data, rs2_data, imm;
+    wire branch_ctrl, reg_write, alu_src_b, mem_read, mem_write, stall, predicted_redirect;
+    wire [31:0] rs1_data, rs2_data, imm, predicted_next_pc;
     wire [4:0]  id_rs1_addr, id_rs2_addr;
+    wire [7:0]  pht_index;
     mem_to_reg_t mem_to_reg;
     alu_op_t     alu_op;
     jump_t       jump;
 
     assign id_rs1_addr = id_instruction[19:15];
     assign id_rs2_addr = id_instruction[24:20];
+
+    branch_predictor b_pred (.clk                (clk),
+                             .reset              (reset),
+                             .branch_ctrl        (branch_ctrl),
+                             .ex_branch_ctrl     (ex_branch_ctrl),
+                             .branch_taken       (branch_taken),
+                             .id_pc_out          (id_pc_out),
+                             .imm                (imm),
+                             .ex_pht_index       (ex_pht_index),
+                             .predicted_next_pc  (predicted_next_pc),
+                             .pht_index          (pht_index),
+                             .predicted_redirect (predicted_redirect));
 
     hazard_unit hazard_u (.ex_mem_read (ex_mem_read),
                           .ex_rd_addr  (ex_rd_addr),
@@ -77,16 +92,17 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
 
 
     //ID / EX Register
-    reg ex_branch_ctrl, ex_alu_src_b, ex_mem_read, ex_mem_write, ex_reg_write, ex_funct7_30;
+    reg ex_branch_ctrl, ex_alu_src_b, ex_mem_read, ex_mem_write, ex_reg_write, ex_funct7_30, ex_predicted_redirect;
     reg [31:0] ex_rs1_data, ex_rs2_data, ex_imm, ex_pc_plus_4, ex_pc_out;
-    reg [2:0]  ex_funct3;
     reg [4:0]  ex_rd_addr, ex_rs1_addr, ex_rs2_addr;
+    reg [2:0]  ex_funct3;
+    reg [7:0]  ex_pht_index;
     mem_to_reg_t ex_mem_to_reg;
     alu_op_t     ex_alu_op;
     jump_t       ex_jump;
 
     always_ff @(posedge clk) begin
-        if (reset || redirect || stall) begin
+        if (reset || redirect || (!predicted_redirect && stall)) begin //we can only stall when we're NOT making a prediction that needs to reach EX
             ex_branch_ctrl <= 1'b0;
             ex_alu_src_b   <= 1'b0;
             ex_mem_read    <= 1'b0;
@@ -97,6 +113,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
             ex_rd_addr     <= 5'b0;
             ex_rs1_addr    <= 5'b0;
             ex_rs2_addr    <= 5'b0;
+            ex_pht_index   <= 8'b0;
             ex_rs1_data    <= 32'b0;
             ex_rs2_data    <= 32'b0;
             ex_imm         <= 32'b0;
@@ -105,6 +122,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
             ex_mem_to_reg  <= MEM_TO_REG_ALU;
             ex_alu_op      <= ALUOP_ADD;
             ex_jump        <= JUMP_NONE;
+            ex_predicted_redirect <= 1'b0;
         end else begin
             ex_branch_ctrl <= branch_ctrl;
             ex_alu_src_b   <= alu_src_b;
@@ -116,6 +134,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
             ex_rd_addr     <= id_instruction[11:7];
             ex_rs1_addr    <= id_rs1_addr;
             ex_rs2_addr    <= id_rs2_addr;
+            ex_pht_index   <= pht_index;
             ex_rs1_data    <= rs1_data;
             ex_rs2_data    <= rs2_data;
             ex_imm         <= imm;
@@ -124,11 +143,12 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
             ex_mem_to_reg  <= mem_to_reg;
             ex_alu_op      <= alu_op;
             ex_jump        <= jump;
+            ex_predicted_redirect <= predicted_redirect;
         end
     end
 
     //EX Stage
-    wire        zero, carry, overflow, negative, redirect;
+    wire        zero, carry, overflow, negative, redirect, branch_taken;
     wire [31:0] alu_b, alu_result, pc_plus_imm, next_pc;
     reg [31:0]  a_forwarded, b_forwarded, mem_forward_data;
     forward_select_t forward_a_select, forward_b_select;
@@ -177,20 +197,23 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
              .overflow    (overflow),
              .carry       (carry));
 
-    next_pc_unit next_pc_u (.funct3      (ex_funct3),
-                            .jump        (ex_jump),
-                            .branch_ctrl (ex_branch_ctrl),
-                            .zero        (zero),
-                            .negative    (negative),
-                            .overflow    (overflow),
-                            .carry       (carry),
-                            .alu_result  (alu_result),
-                            .imm         (ex_imm),
-                            .pc_plus_4   (pc_plus_4),
-                            .pc_out      (ex_pc_out),
-                            .redirect    (redirect),
-                            .pc_plus_imm (pc_plus_imm),
-                            .next_pc     (next_pc));
+    next_pc_unit next_pc_u (.funct3                (ex_funct3),
+                            .jump                  (ex_jump),
+                            .ex_branch_ctrl        (ex_branch_ctrl),
+                            .zero                  (zero),
+                            .negative              (negative),
+                            .overflow              (overflow),
+                            .carry                 (carry),
+                            .alu_result            (alu_result),
+                            .imm                   (ex_imm),
+                            .pc_plus_4             (pc_plus_4),
+                            .ex_pc_plus_4          (ex_pc_plus_4),
+                            .ex_predicted_redirect (ex_predicted_redirect),
+                            .pc_out                (ex_pc_out),
+                            .branch_taken          (branch_taken),
+                            .redirect              (redirect),
+                            .pc_plus_imm           (pc_plus_imm),
+                            .next_pc               (next_pc));
 
     //EX / MEM Register
     reg [31:0] mem_alu_result, mem_pc_plus_imm, mem_rs2_data, mem_pc_plus_4;

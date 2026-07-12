@@ -4,7 +4,9 @@ module program_count(input             clk,
                      input             reset,
                      input             stall,
                      input             redirect,
+                     input             predicted_redirect,
                      input [31:0]      next_pc,
+                     input [31:0]      predicted_next_pc,
                      output reg [31:0] pc_plus_4,
                      output reg [31:0] pc_out);
 
@@ -15,5 +17,7 @@ module program_count(input             clk,
             pc_out <= 32'b0;
         else if (!stall || redirect)
             pc_out <= next_pc;
+        else if (predicted_redirect)
+            pc_out <= predicted_next_pc;
     end
 endmodule

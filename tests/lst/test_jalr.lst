@@ -1,0 +1,76 @@
+# ABI register reference:
+# zero=x0  ra=x1   sp=x2   gp=x3   tp=x4   t0=x5   t1=x6   t2=x7
+# s0=x8    s1=x9   a0=x10  a1=x11  a2=x12  a3=x13  a4=x14  a5=x15
+# a6=x16   a7=x17  s2=x18  s3=x19  s4=x20  s5=x21  s6=x22  s7=x23
+# s8=x24   s9=x25  s10=x26 s11=x27 t3=x28  t4=x29  t5=x30  t6=x31
+
+
+/mnt/c/Users/willi/OneDrive/Desktop/stroud/digital_logic/riscv_cpu/tests/test_jalr.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	00000193          	addi	gp,zero,0
+   4:	00c000ef          	jal	ra,10 <func1>
+   8:	00118193          	addi	gp,gp,1 # 18ad <__global_pointer$+0x1>
+   c:	00c0006f          	jal	zero,18 <test2>
+
+00000010 <func1>:
+  10:	00008067          	jalr	zero,0(ra)
+  14:	0880006f          	jal	zero,9c <fail>
+
+00000018 <test2>:
+  18:	00000097          	auipc	ra,0x0
+  1c:	01808093          	addi	ra,ra,24 # 30 <t2_land>
+  20:	00008067          	jalr	zero,0(ra)
+  24:	0780006f          	jal	zero,9c <fail>
+  28:	0740006f          	jal	zero,9c <fail>
+  2c:	0700006f          	jal	zero,9c <fail>
+
+00000030 <t2_land>:
+  30:	00118193          	addi	gp,gp,1 # 18ad <__global_pointer$+0x1>
+  34:	00000097          	auipc	ra,0x0
+  38:	01408093          	addi	ra,ra,20 # 48 <t3_land+0x4>
+  3c:	ffc08067          	jalr	zero,-4(ra)
+  40:	05c0006f          	jal	zero,9c <fail>
+
+00000044 <t3_land>:
+  44:	00118193          	addi	gp,gp,1 # 18ad <__global_pointer$+0x1>
+  48:	00000097          	auipc	ra,0x0
+  4c:	01108093          	addi	ra,ra,17 # 59 <t3_land+0x15>
+  50:	00008067          	jalr	zero,0(ra)
+  54:	0480006f          	jal	zero,9c <fail>
+  58:	00118193          	addi	gp,gp,1 # 18ad <__global_pointer$+0x1>
+  5c:	00000297          	auipc	t0,0x0
+  60:	00c28293          	addi	t0,t0,12 # 68 <t3_land+0x24>
+  64:	008000ef          	jal	ra,6c <func2>
+  68:	0080006f          	jal	zero,70 <t5_check>
+
+0000006c <func2>:
+  6c:	00008067          	jalr	zero,0(ra)
+
+00000070 <t5_check>:
+  70:	02509663          	bne	ra,t0,9c <fail>
+  74:	00118193          	addi	gp,gp,1 # 18ad <__global_pointer$+0x1>
+  78:	00000097          	auipc	ra,0x0
+  7c:	01808093          	addi	ra,ra,24 # 90 <t6_land>
+  80:	000080e7          	jalr	ra,0(ra)
+  84:	0180006f          	jal	zero,9c <fail>
+  88:	0140006f          	jal	zero,9c <fail>
+  8c:	0100006f          	jal	zero,9c <fail>
+
+00000090 <t6_land>:
+  90:	00118193          	addi	gp,gp,1 # 18ad <__global_pointer$+0x1>
+
+00000094 <pass>:
+  94:	00100193          	addi	gp,zero,1
+  98:	0100006f          	jal	zero,a8 <done>
+
+0000009c <fail>:
+  9c:	0000e1b7          	lui	gp,0xe
+  a0:	ead18193          	addi	gp,gp,-339 # dead <__global_pointer$+0xc601>
+  a4:	0040006f          	jal	zero,a8 <done>
+
+000000a8 <done>:
+  a8:	0000006f          	jal	zero,a8 <done>

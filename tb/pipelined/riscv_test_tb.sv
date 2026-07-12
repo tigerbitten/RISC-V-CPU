@@ -1,6 +1,6 @@
 module riscv_test_tb;
        
-    parameter MEM_FILE = "test_jalr.mem"; //test selection
+    parameter MEM_FILE = "test_branches.mem"; //test selection
     parameter CYCLES = 300;
     
     integer   pass_count = 0;
@@ -19,7 +19,7 @@ module riscv_test_tb;
 
     task tick();
         begin
-            $display("PC:%d instruction:%h", dut.pc.pc_out, dut.imem.instruction);
+            $display("PC:%d PC:%h instruction:%h", dut.pc.pc_out, dut.pc.pc_out, dut.imem.instruction);
             @(posedge clk) #1;
         end
     endtask

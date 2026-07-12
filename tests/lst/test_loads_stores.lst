@@ -1,0 +1,93 @@
+# ABI register reference:
+# zero=x0  ra=x1   sp=x2   gp=x3   tp=x4   t0=x5   t1=x6   t2=x7
+# s0=x8    s1=x9   a0=x10  a1=x11  a2=x12  a3=x13  a4=x14  a5=x15
+# a6=x16   a7=x17  s2=x18  s3=x19  s4=x20  s5=x21  s6=x22  s7=x23
+# s8=x24   s9=x25  s10=x26 s11=x27 t3=x28  t4=x29  t5=x30  t6=x31
+
+
+/mnt/c/Users/willi/OneDrive/Desktop/stroud/digital_logic/riscv_cpu/tests/test_loads_stores.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	00000193          	addi	gp,zero,0
+   4:	00000313          	addi	t1,zero,0
+   8:	123450b7          	lui	ra,0x12345
+   c:	67808093          	addi	ra,ra,1656 # 12345678 <__global_pointer$+0x12343d50>
+  10:	00132023          	sw	ra,0(t1)
+  14:	00032103          	lw	sp,0(t1)
+  18:	10209463          	bne	ra,sp,120 <fail>
+  1c:	00118193          	addi	gp,gp,1 # 1929 <__global_pointer$+0x1>
+  20:	fff00093          	addi	ra,zero,-1
+  24:	00132023          	sw	ra,0(t1)
+  28:	00032103          	lw	sp,0(t1)
+  2c:	0e209a63          	bne	ra,sp,120 <fail>
+  30:	00118193          	addi	gp,gp,1 # 1929 <__global_pointer$+0x1>
+  34:	000010b7          	lui	ra,0x1
+  38:	23408093          	addi	ra,ra,564 # 1234 <__BSS_END__+0x10c>
+  3c:	00131223          	sh	ra,4(t1)
+  40:	00431103          	lh	sp,4(t1)
+  44:	0c209e63          	bne	ra,sp,120 <fail>
+  48:	00118193          	addi	gp,gp,1 # 1929 <__global_pointer$+0x1>
+  4c:	ffff80b7          	lui	ra,0xffff8
+  50:	00131223          	sh	ra,4(t1)
+  54:	00431103          	lh	sp,4(t1)
+  58:	ffff82b7          	lui	t0,0xffff8
+  5c:	0c511263          	bne	sp,t0,120 <fail>
+  60:	00118193          	addi	gp,gp,1 # 1929 <__global_pointer$+0x1>
+  64:	000080b7          	lui	ra,0x8
+  68:	00131223          	sh	ra,4(t1)
+  6c:	00435103          	lhu	sp,4(t1)
+  70:	000082b7          	lui	t0,0x8
+  74:	0a511663          	bne	sp,t0,120 <fail>
+  78:	00118193          	addi	gp,gp,1 # 1929 <__global_pointer$+0x1>
+  7c:	04200093          	addi	ra,zero,66
+  80:	00130423          	sb	ra,8(t1)
+  84:	00830103          	lb	sp,8(t1)
+  88:	08209c63          	bne	ra,sp,120 <fail>
+  8c:	00118193          	addi	gp,gp,1 # 1929 <__global_pointer$+0x1>
+  90:	f8000093          	addi	ra,zero,-128
+  94:	00130423          	sb	ra,8(t1)
+  98:	00830103          	lb	sp,8(t1)
+  9c:	f8000293          	addi	t0,zero,-128
+  a0:	08511063          	bne	sp,t0,120 <fail>
+  a4:	00118193          	addi	gp,gp,1 # 1929 <__global_pointer$+0x1>
+  a8:	08000093          	addi	ra,zero,128
+  ac:	00130423          	sb	ra,8(t1)
+  b0:	00834103          	lbu	sp,8(t1)
+  b4:	08000293          	addi	t0,zero,128
+  b8:	06511463          	bne	sp,t0,120 <fail>
+  bc:	00118193          	addi	gp,gp,1 # 1929 <__global_pointer$+0x1>
+  c0:	aaaab0b7          	lui	ra,0xaaaab
+  c4:	aaa08093          	addi	ra,ra,-1366 # aaaaaaaa <__global_pointer$+0xaaaa9182>
+  c8:	55555137          	lui	sp,0x55555
+  cc:	55510113          	addi	sp,sp,1365 # 55555555 <__global_pointer$+0x55553c2d>
+  d0:	00132023          	sw	ra,0(t1)
+  d4:	00232223          	sw	sp,4(t1)
+  d8:	00032203          	lw	tp,0(t1)
+  dc:	04121263          	bne	tp,ra,120 <fail>
+  e0:	00118193          	addi	gp,gp,1 # 1929 <__global_pointer$+0x1>
+  e4:	00432203          	lw	tp,4(t1)
+  e8:	02221c63          	bne	tp,sp,120 <fail>
+  ec:	00118193          	addi	gp,gp,1 # 1929 <__global_pointer$+0x1>
+  f0:	123450b7          	lui	ra,0x12345
+  f4:	67808093          	addi	ra,ra,1656 # 12345678 <__global_pointer$+0x12343d50>
+  f8:	00132623          	sw	ra,12(t1)
+  fc:	0ab00113          	addi	sp,zero,171
+ 100:	00230623          	sb	sp,12(t1)
+ 104:	00c32203          	lw	tp,12(t1)
+ 108:	123452b7          	lui	t0,0x12345
+ 10c:	6ab28293          	addi	t0,t0,1707 # 123456ab <__global_pointer$+0x12343d83>
+ 110:	00521863          	bne	tp,t0,120 <fail>
+ 114:	00118193          	addi	gp,gp,1 # 1929 <__global_pointer$+0x1>
+
+00000118 <pass>:
+ 118:	00100193          	addi	gp,zero,1
+ 11c:	0080006f          	jal	zero,124 <done>
+
+00000120 <fail>:
+ 120:	0040006f          	jal	zero,124 <done>
+
+00000124 <done>:
+ 124:	0000006f          	jal	zero,124 <done>

@@ -1,0 +1,24 @@
+# ABI register reference:
+# zero=x0  ra=x1   sp=x2   gp=x3   tp=x4   t0=x5   t1=x6   t2=x7
+# s0=x8    s1=x9   a0=x10  a1=x11  a2=x12  a3=x13  a4=x14  a5=x15
+# a6=x16   a7=x17  s2=x18  s3=x19  s4=x20  s5=x21  s6=x22  s7=x23
+# s8=x24   s9=x25  s10=x26 s11=x27 t3=x28  t4=x29  t5=x30  t6=x31
+
+
+/mnt/c/Users/willi/OneDrive/Desktop/stroud/digital_logic/riscv_cpu/tests/load_use_hazard_test.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	02a00093          	addi	ra,zero,42
+   4:	00102023          	sw	ra,0(zero) # 0 <_start>
+   8:	00000013          	addi	zero,zero,0
+   c:	00000013          	addi	zero,zero,0
+  10:	00000013          	addi	zero,zero,0
+  14:	00000013          	addi	zero,zero,0
+  18:	00002103          	lw	sp,0(zero) # 0 <_start>
+  1c:	fd710193          	addi	gp,sp,-41
+
+00000020 <done>:
+  20:	0000006f          	jal	zero,20 <done>
