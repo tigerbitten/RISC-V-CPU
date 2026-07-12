@@ -1,6 +1,7 @@
 import riscv_pkg::*;
 
-module cpu_top #(parameter MEM_FILE = "current_test.mem") 
+module cpu_top #(parameter MEM_FILE = "current_test.mem",
+                 parameter BRANCH_PRED = 1) 
     (input clk,
      input reset);
 
@@ -11,7 +12,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
                       .reset              (reset),
                       .stall              (stall),
                       .redirect           (redirect),
-                      .predicted_redirect (predicted_redirect),
+                      .predicted_redirect (predicted_redirect && BRANCH_PRED),
                       .predicted_next_pc  (predicted_next_pc),
                       .next_pc            (next_pc),
                       .pc_plus_4          (pc_plus_4),
@@ -24,7 +25,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     reg [31:0] id_pc_plus_4, id_pc_out, id_instruction;
 
     always_ff @(posedge clk) begin
-        if (reset || redirect || predicted_redirect) begin
+        if (reset || redirect || (predicted_redirect && BRANCH_PRED)) begin
             id_pc_plus_4   <= 32'b0;
             id_pc_out      <= 32'b0;
             id_instruction <= 32'b0;
@@ -102,7 +103,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
     jump_t       ex_jump;
 
     always_ff @(posedge clk) begin
-        if (reset || redirect || (!predicted_redirect && stall)) begin //we can only stall when we're NOT making a prediction that needs to reach EX
+        if (reset || redirect || (!(predicted_redirect && BRANCH_PRED) && stall)) begin //we can only stall when we're NOT making a prediction that needs to reach EX
             ex_branch_ctrl <= 1'b0;
             ex_alu_src_b   <= 1'b0;
             ex_mem_read    <= 1'b0;
@@ -143,7 +144,7 @@ module cpu_top #(parameter MEM_FILE = "current_test.mem")
             ex_mem_to_reg  <= mem_to_reg;
             ex_alu_op      <= alu_op;
             ex_jump        <= jump;
-            ex_predicted_redirect <= predicted_redirect;
+            ex_predicted_redirect <= predicted_redirect && BRANCH_PRED;
         end
     end
 

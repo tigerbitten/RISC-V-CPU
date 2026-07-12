@@ -1,0 +1,67 @@
+# ABI register reference:
+# zero=x0  ra=x1   sp=x2   gp=x3   tp=x4   t0=x5   t1=x6   t2=x7
+# s0=x8    s1=x9   a0=x10  a1=x11  a2=x12  a3=x13  a4=x14  a5=x15
+# a6=x16   a7=x17  s2=x18  s3=x19  s4=x20  s5=x21  s6=x22  s7=x23
+# s8=x24   s9=x25  s10=x26 s11=x27 t3=x28  t4=x29  t5=x30  t6=x31
+
+
+/mnt/c/Users/willi/OneDrive/Desktop/stroud/digital_logic/riscv_cpu/tests/test_branch_prediction.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	00000193          	addi	gp,zero,0
+   4:	00000093          	addi	ra,zero,0
+   8:	00100113          	addi	sp,zero,1
+   c:	06400213          	addi	tp,zero,100
+
+00000010 <sum_loop>:
+  10:	002080b3          	add	ra,ra,sp
+  14:	00110113          	addi	sp,sp,1
+  18:	fe225ce3          	bge	tp,sp,10 <sum_loop>
+  1c:	000012b7          	lui	t0,0x1
+  20:	3ba28293          	addi	t0,t0,954 # 13ba <__BSS_END__+0x31a>
+  24:	06509663          	bne	ra,t0,90 <fail>
+  28:	00118193          	addi	gp,gp,1 # 18a1 <__global_pointer$+0x1>
+  2c:	00000093          	addi	ra,zero,0
+  30:	00a00313          	addi	t1,zero,10
+
+00000034 <outer_loop>:
+  34:	01400113          	addi	sp,zero,20
+
+00000038 <inner_loop>:
+  38:	00108093          	addi	ra,ra,1
+  3c:	fff10113          	addi	sp,sp,-1
+  40:	fe011ce3          	bne	sp,zero,38 <inner_loop>
+  44:	fff30313          	addi	t1,t1,-1
+  48:	fe0316e3          	bne	t1,zero,34 <outer_loop>
+  4c:	0c800293          	addi	t0,zero,200
+  50:	04509063          	bne	ra,t0,90 <fail>
+  54:	00118193          	addi	gp,gp,1 # 18a1 <__global_pointer$+0x1>
+  58:	00000093          	addi	ra,zero,0
+  5c:	00100113          	addi	sp,zero,1
+  60:	01300213          	addi	tp,zero,19
+
+00000064 <fib_loop>:
+  64:	002082b3          	add	t0,ra,sp
+  68:	00010093          	addi	ra,sp,0
+  6c:	00028113          	addi	sp,t0,0
+  70:	fff20213          	addi	tp,tp,-1 # ffffffff <__global_pointer$+0xffffe75f>
+  74:	fe0218e3          	bne	tp,zero,64 <fib_loop>
+  78:	000022b7          	lui	t0,0x2
+  7c:	a6d28293          	addi	t0,t0,-1427 # 1a6d <__global_pointer$+0x1cd>
+  80:	00511863          	bne	sp,t0,90 <fail>
+  84:	00118193          	addi	gp,gp,1 # 18a1 <__global_pointer$+0x1>
+
+00000088 <pass>:
+  88:	00100193          	addi	gp,zero,1
+  8c:	0100006f          	jal	zero,9c <done>
+
+00000090 <fail>:
+  90:	0000e1b7          	lui	gp,0xe
+  94:	ead18193          	addi	gp,gp,-339 # dead <__global_pointer$+0xc60d>
+  98:	0040006f          	jal	zero,9c <done>
+
+0000009c <done>:
+  9c:	0000006f          	jal	zero,9c <done>

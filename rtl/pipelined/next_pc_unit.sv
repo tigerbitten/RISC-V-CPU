@@ -41,14 +41,15 @@ module next_pc_unit(input branch_funct3_t funct3,
             next_pc = {alu_result[31:1], 1'b0};
         else if (jump == JUMP_JAL)
             next_pc = adder_out;
-        else if (ex_branch_ctrl && branch_taken)
+        else if (ex_branch_ctrl && branch_taken && !ex_predicted_redirect)
             next_pc = adder_out;
         else
             next_pc = pc_plus_4;
 
         //redirect reflects whether control flow actually diverts,
         //NOT a comparison against the (unrelated) live pc_plus_4
-        redirect = (jump != JUMP_NONE) || (ex_branch_ctrl && branch_taken);
+        //redirect only high if the prediction is WRONG for branches
+        redirect = (jump != JUMP_NONE) || (ex_branch_ctrl && branch_taken && !ex_predicted_redirect);
 
         //this logic CORRECTLY overides the above
         //if we make a misprediction, assert redirect to flush

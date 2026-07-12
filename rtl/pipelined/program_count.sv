@@ -15,9 +15,11 @@ module program_count(input             clk,
     always_ff @(posedge clk) begin
         if (reset)
             pc_out <= 32'b0;
-        else if (!stall || redirect)
+        else if (redirect)
             pc_out <= next_pc;
         else if (predicted_redirect)
             pc_out <= predicted_next_pc;
+        else if (!stall)
+            pc_out <= next_pc;
     end
 endmodule
