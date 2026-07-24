@@ -28,6 +28,11 @@ module riscv_test_tb;
     endtask
 
     initial begin
+        $dumpfile("../../../../../../../riscv_cpu/waves.vcd");
+        $dumpvars(0, cpu_top);
+    end
+
+    initial begin
         clk   = 0;
         reset = 1;
         tick(); //reset is SYNCHRONOUS so it needs a posedge

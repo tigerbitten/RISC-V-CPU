@@ -17,6 +17,10 @@ vivado*/
 *.hw/
 *.ip_user_files/
 *.sim/
+xsim.dir/
+*.wdb
+*.pb
+dfx_runtime.txt
 tests/run_sim.tcl
 tests/run_tests.py
 *.bin
@@ -24,3 +28,4 @@ tests/run_tests.py
 *.claude*
 *.claude/
 .claude/
+CLAUDE.md
